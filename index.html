@@ -2378,8 +2378,9 @@ function openDetail(i){
     <div class="card-t" style="margin-top:1rem">Sensaciones / notas</div>
     <textarea id="detail-notas" rows="3" placeholder="¿Cómo te sentiste? Piernas, calor, ánimo...">${esc(getNotaExtra(a))}</textarea>
     <button class="btn btn-s btn-sm" id="detail-guardar-nota" style="margin-top:.5rem">💾 Guardar nota</button>
-    <div style="display:flex;gap:.6rem;margin-top:1.25rem">
+    <div style="display:flex;gap:.6rem;margin-top:1.25rem;flex-wrap:wrap">
       <button class="btn btn-p btn-sm" id="detail-analyze-btn">🤖 Analizar con IA</button>
+      ${!ACTS_BASE.some(b=>b.fecha===a.fecha&&b.tipo===a.tipo&&Math.abs((b.distancia||0)-(a.distancia||0))<0.05) ? `<button class="btn btn-sm" id="detail-borrar-btn" style="background:rgba(196,105,74,.15);color:#c4694a;border:1px solid rgba(196,105,74,.3)">🗑 Borrar actividad</button>` : ''}
     </div>
     <div class="spin-wrap" id="spin-detail"><div class="spin"></div>Analizando...</div>
     <div class="ai-box" id="resp-detail"></div>
@@ -2387,6 +2388,17 @@ function openDetail(i){
 
   document.getElementById('detail-close-btn').addEventListener('click', closeDetail);
   document.getElementById('detail-analyze-btn').addEventListener('click', ()=>analizarDetalle(a));
+  const btnBorrar = document.getElementById('detail-borrar-btn');
+  if(btnBorrar) btnBorrar.addEventListener('click', ()=>{
+    if(!confirm('¿Borrar esta actividad? No se puede deshacer.')) return;
+    const local = JSON.parse(localStorage.getItem('trainai')||'[]');
+    const nuevaLista = local.filter(b=>!(b.fecha===a.fecha&&b.tipo===a.tipo&&Math.abs((b.distancia||0)-(a.distancia||0))<0.05));
+    localStorage.setItem('trainai', JSON.stringify(nuevaLista));
+    ACTS = [...ACTS_BASE, ...nuevaLista];
+    closeDetail();
+    renderHist();
+    alert('✅ Actividad borrada.');
+  });
   document.getElementById('detail-guardar-nota').addEventListener('click', ()=>{
     const txt = document.getElementById('detail-notas').value.trim();
     setNotaExtra(a, txt);
