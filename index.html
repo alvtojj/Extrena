@@ -1,0 +1,2919 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Extrena</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0d1f15;--s1:#15291d;--s2:#1d3526;--bd:#2c4734;
+  --cy:#d4a843;--or:#c97b4a;--gr:#6fae6f;--ye:#e0b94f;
+  --tx:#e4ede6;--mu:#7fa68d;--di:#3a5c46;
+}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--tx);min-height:100vh;display:flex;flex-direction:column}
+/* HEADER */
+header{background:var(--s1);border-bottom:1px solid var(--bd);padding:0 1.5rem;height:56px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:200}
+.logo{font-family:'Space Grotesk',sans-serif;font-size:1.05rem;font-weight:700;display:flex;align-items:center;gap:.5rem}
+.hbadge{font-size:.72rem;color:var(--mu)}
+/* TABS */
+nav{background:var(--s1);border-top:1px solid var(--bd);display:flex;padding:0 .5rem;overflow-x:auto;gap:0;position:fixed;bottom:0;left:0;right:0;z-index:200;justify-content:space-around}
+.tab{background:none;border:none;border-top:2px solid transparent;color:var(--mu);font-family:'Inter',sans-serif;font-size:.68rem;font-weight:500;padding:.6rem .4rem;cursor:pointer;white-space:nowrap;transition:all .15s;flex:1;text-align:center}
+.tab:hover{color:var(--tx)}
+.tab.on{color:var(--cy);border-top-color:var(--cy)}
+/* MAIN */
+main{flex:1;padding:1.5rem;padding-bottom:5rem;max-width:1200px;margin:0 auto;width:100%}
+.panel{display:none}.panel.on{display:block}
+/* CARDS */
+.card{background:var(--s1);border:1px solid var(--bd);border-radius:12px;padding:1.25rem;margin-bottom:1.25rem}
+.card-t{font-size:.7rem;font-weight:600;text-transform:uppercase;letter-spacing:.1em;color:var(--mu);margin-bottom:.9rem}
+/* GRIDS */
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:1.25rem}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:.9rem}
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:.9rem}
+/* STAT */
+.stat{background:var(--s2);border:1px solid var(--bd);border-radius:10px;padding:.9rem;text-align:center}
+.stat .v{font-family:'Space Grotesk',sans-serif;font-size:1.6rem;font-weight:700;line-height:1}
+.stat .l{font-size:.67rem;color:var(--mu);margin-top:.3rem;text-transform:uppercase;letter-spacing:.05em}
+.v-r{color:#c4694a}.v-s{color:#3d8a8a}.v-b{color:#b8923a}.v-c{color:var(--cy)}.v-g{color:var(--gr)}.v-y{color:var(--ye)}.v-w{color:#8a9a7a}
+/* FORMS */
+label{display:block;font-size:.78rem;color:var(--mu);margin-bottom:.35rem;font-weight:500}
+input,select,textarea{width:100%;background:var(--s2);border:1px solid var(--bd);border-radius:8px;color:var(--tx);font-family:'Inter',sans-serif;font-size:.85rem;padding:.6rem .85rem;outline:none;transition:border-color .2s}
+input:focus,select:focus,textarea:focus{border-color:var(--cy)}
+select option{background:var(--s2)}
+textarea{resize:vertical}
+.fr{margin-bottom:.9rem}
+.fg2{display:grid;grid-template-columns:1fr 1fr;gap:.9rem}
+.fg3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:.9rem}
+/* BUTTONS */
+.btn{display:inline-flex;align-items:center;gap:.4rem;padding:.6rem 1.2rem;border-radius:8px;border:none;cursor:pointer;font-family:'Inter',sans-serif;font-size:.85rem;font-weight:600;transition:all .2s}
+.btn-p{background:var(--cy);color:#0d1520}.btn-p:hover{filter:brightness(1.1)}.btn-p:disabled{opacity:.4;cursor:not-allowed}
+.btn-s{background:var(--s2);color:var(--tx);border:1px solid var(--bd)}.btn-s:hover{border-color:var(--cy)}
+.btn-d{background:rgba(196,105,74,.15);color:#c4694a;border:1px solid rgba(196,105,74,.3)}
+.btn-sm{padding:.38rem .8rem;font-size:.78rem}
+/* CHAT */
+.chat-box{background:var(--s2);border:1px solid var(--bd);border-radius:12px;padding:1.25rem;min-height:380px;max-height:460px;overflow-y:auto;display:flex;flex-direction:column;gap:.9rem;margin-bottom:.9rem}
+.msg{max-width:88%;padding:.75rem 1rem;border-radius:10px;font-size:.85rem;line-height:1.65;white-space:pre-wrap}
+.msg-u{background:var(--bd);align-self:flex-end}
+.msg-a{background:rgba(61,138,138,.07);border:1px solid rgba(61,138,138,.18);align-self:flex-start}
+.chat-row{display:flex;gap:.6rem;margin-bottom:.6rem}
+.chat-row input{flex:1}
+.quick-btns{display:flex;gap:.5rem;flex-wrap:wrap}
+/* TABLE */
+.tbl{width:100%;border-collapse:collapse;font-size:.8rem}
+.tbl th{text-align:left;padding:.5rem .7rem;font-size:.67rem;text-transform:uppercase;letter-spacing:.07em;color:var(--mu);border-bottom:1px solid var(--bd);font-weight:600}
+.tbl td{padding:.65rem .7rem;border-bottom:1px solid rgba(39,61,88,.45);vertical-align:middle}
+.tbl tr:last-child td{border-bottom:none}
+.tbl tr:hover td{background:rgba(255,255,255,.02);cursor:pointer}
+.dot{display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:.4rem;vertical-align:middle}
+.tag{display:inline-block;padding:.15rem .4rem;border-radius:4px;font-size:.67rem;font-weight:600}
+.t-r{background:rgba(196,105,74,.15);color:#c4694a}
+.t-s{background:rgba(61,138,138,.15);color:var(--cy)}
+.t-b{background:rgba(184,146,58,.15);color:#b8923a}
+.t-w{background:rgba(138,154,122,.18);color:#8a9a7a}
+/* AI RESPONSE */
+.ai-box{background:var(--s2);border:1px solid var(--bd);border-left:3px solid var(--cy);border-radius:8px;padding:1.1rem;font-size:.85rem;line-height:1.7;white-space:pre-wrap;display:none;margin-top:.9rem}
+.ai-box.on{display:block}
+.spin-wrap{display:none;align-items:center;gap:.6rem;color:var(--mu);font-size:.82rem;margin-top:.9rem;padding:.75rem}
+.spin-wrap.on{display:flex}
+.spin{width:15px;height:15px;border:2px solid var(--bd);border-top-color:var(--cy);border-radius:50%;animation:sp .8s linear infinite;flex-shrink:0}
+@keyframes sp{to{transform:rotate(360deg)}}
+/* CHART */
+.cw{position:relative;height:200px;margin-top:.9rem}
+.cw-t{height:260px}
+/* PROGRESS */
+.pb-wrap{margin-bottom:.9rem}
+.pb-lbl{display:flex;justify-content:space-between;font-size:.78rem;margin-bottom:.3rem}
+.pb-lbl span:first-child{color:var(--tx)}
+.pb{height:6px;background:var(--s2);border-radius:3px;overflow:hidden}
+.pb-fill{height:100%;border-radius:3px;transition:width .6s}
+/* NOTA */
+.nota{padding:.75rem;border-radius:8px;font-size:.76rem;line-height:1.6;margin-top:.75rem;color:var(--mu)}
+.nota-r{background:rgba(196,105,74,.08)}
+.nota-s{background:rgba(61,138,138,.08)}
+.nota-b{background:rgba(184,146,58,.08)}
+/* SPORT SELECTOR */
+.sport-btns{display:flex;gap:.5rem;flex-wrap:wrap;align-items:center;margin-bottom:1.25rem}
+/* CALENDARIO */
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:5px}
+.cal-grid-header{margin-bottom:5px}
+.cal-dow{font-size:.68rem;color:var(--mu);text-align:center;font-weight:600;padding:.3rem 0}
+.cal-celda{aspect-ratio:1;background:var(--s2);border:1px solid var(--bd);border-radius:8px;padding:.3rem;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;transition:all .15s}
+.cal-celda:hover{border-color:var(--cy);transform:scale(1.04)}
+.cal-vacia{background:transparent;border:none}
+.cal-vacia:hover{transform:none}
+.cal-num{font-size:.78rem;color:var(--tx);font-weight:700}
+.cal-hoy{border-color:var(--cy);border-width:2px}
+/* Estado del entrenamiento: el FONDO de la celda marca claramente hecho/pendiente, nunca se pierde el icono */
+.cal-hecho{background:rgba(212,168,67,.22);border-color:rgba(212,168,67,.45)}
+.cal-hecho .cal-num{color:var(--cy)}
+.cal-pendiente{background:var(--s2);border-color:var(--bd)}
+.cal-descanso{background:rgba(58,92,70,.35)}
+@media(max-width:480px){.cal-celda{font-size:.7rem}.cal-num{font-size:.68rem}}
+.sbtn{background:var(--s2);border:1px solid var(--bd);color:var(--tx);border-radius:8px;padding:.38rem .85rem;font-size:.78rem;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;transition:all .15s}
+.sbtn.on{background:var(--cy);color:#0d1520;border-color:var(--cy)}
+/* PLAN */
+.plan-sem{border:1px solid var(--bd);border-radius:10px;overflow:hidden;margin-bottom:1rem}
+.plan-hdr{background:var(--s2);padding:.65rem 1rem;display:flex;justify-content:space-between;align-items:center}
+.plan-hdr-t{font-family:'Space Grotesk',sans-serif;font-size:.82rem;font-weight:600;color:var(--cy)}
+.plan-hdr-b{font-size:.72rem;color:var(--mu)}
+.plan-dia{padding:.65rem 1rem;border-top:1px solid rgba(39,61,88,.45);display:flex;gap:.8rem;align-items:flex-start;font-size:.82rem}
+.plan-dn{font-weight:600;color:var(--mu);min-width:32px;font-size:.7rem;text-transform:uppercase;padding-top:2px}
+.plan-dc{flex:1;line-height:1.5}
+.plan-rest{color:var(--di);font-style:italic}
+.plan-sp{color:var(--ye);font-weight:600}
+/* SECTION HEADER */
+.sh{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem}
+.st{font-family:'Space Grotesk',sans-serif;font-size:1.3rem;font-weight:700}
+.ss{font-size:.82rem;color:var(--mu);margin-top:.2rem}
+hr.div{border:none;border-top:1px solid var(--bd);margin:1rem 0}
+/* ZONA BAR */
+.zbar-wrap{margin-bottom:.5rem}
+.zbar-lbl{display:flex;justify-content:space-between;font-size:.72rem;color:var(--mu);margin-bottom:.25rem}
+.zbar{height:8px;background:var(--bd);border-radius:4px;overflow:hidden}
+.zbar-fill{height:100%;border-radius:4px}
+/* IMPORT */
+.import-area{background:var(--s2);border:2px dashed var(--bd);border-radius:10px;padding:1.5rem;text-align:center;font-size:.85rem;color:var(--mu);margin-bottom:.9rem;cursor:pointer;transition:all .2s}
+.import-area:hover{border-color:var(--cy);color:var(--cy)}
+
+/* DETALLE ACTIVIDAD */
+.detail-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:500;align-items:flex-start;justify-content:center;padding:2rem 1rem;overflow-y:auto}
+.detail-overlay.on{display:flex}
+.detail-card{background:var(--s1);border:1px solid var(--bd);border-radius:14px;max-width:640px;width:100%;padding:1.5rem;margin-top:1rem}
+.detail-hdr{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:1.25rem}
+.detail-close{background:var(--s2);border:1px solid var(--bd);color:var(--mu);border-radius:8px;width:32px;height:32px;cursor:pointer;font-size:1rem;display:flex;align-items:center;justify-content:center}
+.detail-close:hover{color:var(--tx);border-color:var(--cy)}
+.detail-title{font-family:'Space Grotesk',sans-serif;font-size:1.15rem;font-weight:700}
+.detail-sub{font-size:.8rem;color:var(--mu);margin-top:.25rem}
+.detail-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:.6rem;margin-bottom:1rem}
+.detail-row{display:flex;justify-content:space-between;padding:.5rem 0;border-bottom:1px solid rgba(39,61,88,.4);font-size:.82rem}
+.detail-row span:first-child{color:var(--tx)}
+.detail-row span:last-child{font-weight:600}
+.tr-click{cursor:pointer}
+.tr-click:active{background:rgba(255,255,255,.04)}
+@media(max-width:768px){main{padding:1rem}.g2,.g3,.g4,.fg2,.fg3{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">⚡ <span style="background:#f5f0dc;border-radius:6px;padding:.1rem .4rem;letter-spacing:.01em"><span style="color:#006633">Ex</span><span style="color:#ffffff;text-shadow:-1px 0 #b4afa0,1px 0 #b4afa0,0 -1px #b4afa0,0 1px #b4afa0">tre</span><span style="color:#1a1a1a">na</span></span></div>
+  <div class="hbadge" id="dias-hdr" style="flex:1;text-align:center">cargando...</div>
+  <div style="display:flex;align-items:center;gap:.6rem">
+    <div style="font-size:.62rem;color:var(--mu);text-align:right;line-height:1.3">Elaborada por<br><strong style="color:var(--tx)">Juanjo Álvarez</strong></div>
+  </div>
+</header>
+
+<nav id="nav"></nav>
+
+<div class="detail-overlay" id="detail-overlay">
+  <div class="detail-card" id="detail-content"></div>
+</div>
+
+<main>
+  <div id="tab-chat" class="panel"></div>
+  <div id="tab-datos" class="panel"></div>
+  <div id="tab-logros" class="panel"></div>
+  <div id="tab-plan" class="panel"></div>
+  <div id="tab-hist" class="panel"></div>
+  <div id="tab-reg" class="panel"></div>
+</main>
+
+<script>
+// ─────────────────────────────────────────────
+// PARSER FIT (validado contra garmin_fit_sdk oficial)
+// ─────────────────────────────────────────────
+// Parser FIT minimalista verificado contra el FIT SDK oficial de Garmin (campos session+record).
+// Aplica escala y offset exactos por campo, igual que hace el SDK real.
+// No requiere librerías externas: solo DataView nativo del navegador.
+
+const FIT_EPOCH_MS = Date.UTC(1989, 11, 31); // FIT timestamps: segundos desde 1989-12-31 UTC
+
+const MESG_SESSION = 18;
+const MESG_RECORD = 20;
+
+// field_def_num -> {name, scale, offset, baseTypeSize}
+// Verificado contra garmin_fit_sdk.profile.Profile['messages'][18|20]['fields']
+const SESSION_FIELDS = {
+  253: { name: 'timestamp', scale: 1, offset: 0 },
+  2:   { name: 'start_time', scale: 1, offset: 0 },
+  7:   { name: 'total_elapsed_time', scale: 1000, offset: 0 },
+  8:   { name: 'total_timer_time', scale: 1000, offset: 0 },
+  9:   { name: 'total_distance', scale: 100, offset: 0 },
+  11:  { name: 'total_calories', scale: 1, offset: 0 },
+  16:  { name: 'avg_heart_rate', scale: 1, offset: 0 },
+  17:  { name: 'max_heart_rate', scale: 1, offset: 0 },
+  22:  { name: 'total_ascent', scale: 1, offset: 0 },
+  23:  { name: 'total_descent', scale: 1, offset: 0 },
+};
+const RECORD_FIELDS = {
+  253: { name: 'timestamp', scale: 1, offset: 0 },
+  3:   { name: 'heart_rate', scale: 1, offset: 0 },
+  5:   { name: 'distance', scale: 100, offset: 0 },
+  6:   { name: 'speed', scale: 1000, offset: 0 },
+};
+
+// baseType (byte completo del FIT, incluye flags) -> {bytes, signed, isFloat}
+function baseTypeInfo(baseType) {
+  const t = baseType & 0x1f;
+  switch (t) {
+    case 0: return { bytes: 1, signed: false }; // enum
+    case 1: return { bytes: 1, signed: true };  // sint8
+    case 2: return { bytes: 1, signed: false }; // uint8
+    case 0x83 & 0x1f: return { bytes: 2, signed: true }; // sint16 (3)
+    case 0x84 & 0x1f: return { bytes: 2, signed: false }; // uint16 (4)
+    case 0x85 & 0x1f: return { bytes: 4, signed: true }; // sint32 (5)
+    case 0x86 & 0x1f: return { bytes: 4, signed: false }; // uint32 (6)
+    case 7: return { bytes: 1, signed: false, isString: true }; // string
+    case 0x88 & 0x1f: return { bytes: 4, signed: false, isFloat: true }; // float32 (8)
+    case 0x89 & 0x1f: return { bytes: 8, signed: false, isFloat: true }; // float64 (9)
+    case 10: return { bytes: 1, signed: false }; // uint8z
+    case 0x8B & 0x1f: return { bytes: 2, signed: false }; // uint16z (11)
+    case 0x8C & 0x1f: return { bytes: 4, signed: false }; // uint32z (12)
+    case 13: return { bytes: 1, signed: false }; // byte
+    case 0x8E & 0x1f: return { bytes: 8, signed: true }; // sint64 (14)
+    case 0x8F & 0x1f: return { bytes: 8, signed: false }; // uint64 (15)
+    default: return { bytes: 1, signed: false };
+  }
+}
+
+function readRawValue(dv, offset, size, baseType, littleEndian) {
+  const info = baseTypeInfo(baseType);
+  if (info.isString) {
+    let s = '';
+    for (let i = 0; i < size; i++) {
+      const c = dv.getUint8(offset + i);
+      if (c === 0) break;
+      s += String.fromCharCode(c);
+    }
+    return s;
+  }
+  // Si el campo definido ocupa más bytes que el tamaño base (raro, p.ej. arrays), usamos solo el primer elemento
+  const n = info.bytes;
+  if (info.isFloat) {
+    return n === 4 ? dv.getFloat32(offset, littleEndian) : dv.getFloat64(offset, littleEndian);
+  }
+  if (n === 1) return info.signed ? dv.getInt8(offset) : dv.getUint8(offset);
+  if (n === 2) return info.signed ? dv.getInt16(offset, littleEndian) : dv.getUint16(offset, littleEndian);
+  if (n === 4) return info.signed ? dv.getInt32(offset, littleEndian) : dv.getUint32(offset, littleEndian);
+  if (n === 8) {
+    // BigInt para 64 bits, lo convertimos a Number (suficiente para nuestros campos, que nunca son de 8 bytes)
+    const big = info.signed ? dv.getBigInt64(offset, littleEndian) : dv.getBigUint64(offset, littleEndian);
+    return Number(big);
+  }
+  return dv.getUint8(offset);
+}
+
+// Valor "inválido" estándar FIT para cada tamaño (0xFF, 0xFFFF, 0xFFFFFFFF) — se traduce a null
+function isInvalidFitValue(raw, baseType) {
+  const info = baseTypeInfo(baseType);
+  if (info.isString) return false;
+  if (info.bytes === 1) return raw === 0xFF || raw === 0x7F;
+  if (info.bytes === 2) return raw === 0xFFFF || raw === 0x7FFF;
+  if (info.bytes === 4) return raw === 0xFFFFFFFF || raw === 0x7FFFFFFF || raw === -1;
+  return false;
+}
+
+function parseFitBuffer(arrayBuffer) {
+  const dv = new DataView(arrayBuffer);
+  const headerSize = dv.getUint8(0);
+  const dataSize = dv.getUint32(4, true);
+  let offset = headerSize;
+  const end = headerSize + dataSize;
+
+  const localDefs = {};
+  const sessions = [];
+  const records = [];
+
+  while (offset < end) {
+    const recordHeader = dv.getUint8(offset);
+    offset += 1;
+    const isDefinition = (recordHeader & 0x40) !== 0;
+    const localType = recordHeader & 0x0f;
+
+    if (isDefinition) {
+      offset += 1; // reserved
+      const littleEndian = dv.getUint8(offset) === 0;
+      offset += 1;
+      const globalNum = dv.getUint16(offset, littleEndian);
+      offset += 2;
+      const numFields = dv.getUint8(offset);
+      offset += 1;
+      const fields = [];
+      for (let i = 0; i < numFields; i++) {
+        const defNum = dv.getUint8(offset); offset += 1;
+        const size = dv.getUint8(offset); offset += 1;
+        const baseType = dv.getUint8(offset); offset += 1;
+        fields.push({ defNum, size, baseType });
+      }
+      // Developer fields (si los hay) — no los necesitamos pero hay que avanzar el offset si existieran
+      // (campos definidos con header bit 0x20 de "developer data flag"); FIT estándar de relojes Garmin
+      // normalmente no los usa para session/record básicos, así que no se gestionan aquí.
+      localDefs[localType] = { globalNum, fields, littleEndian };
+    } else {
+      const def = localDefs[localType];
+      if (!def) break;
+      const msg = {};
+      let fieldMap = null;
+      if (def.globalNum === MESG_SESSION) fieldMap = SESSION_FIELDS;
+      else if (def.globalNum === MESG_RECORD) fieldMap = RECORD_FIELDS;
+
+      for (const f of def.fields) {
+        const raw = readRawValue(dv, offset, f.size, f.baseType, def.littleEndian);
+        offset += f.size;
+        if (fieldMap && fieldMap[f.defNum] != null) {
+          const fdef = fieldMap[f.defNum];
+          if (typeof raw === 'string') {
+            msg[fdef.name] = raw;
+          } else if (isInvalidFitValue(raw, f.baseType)) {
+            msg[fdef.name] = null;
+          } else {
+            msg[fdef.name] = (raw - fdef.offset) / fdef.scale;
+          }
+        }
+      }
+      if (def.globalNum === MESG_SESSION) sessions.push(msg);
+      else if (def.globalNum === MESG_RECORD) records.push(msg);
+    }
+  }
+
+  return { sessions, records };
+}
+
+function fitTimestampToISODate(fitTs) {
+  return new Date(FIT_EPOCH_MS + fitTs * 1000).toISOString().slice(0, 10);
+}
+
+// Convierte el resultado crudo en el formato de actividad que usa la app
+function fitToActivity(arrayBuffer, tipoDeporte) {
+  const { sessions, records } = parseFitBuffer(arrayBuffer);
+  if (!sessions.length) throw new Error('No se encontró información de sesión en el archivo FIT.');
+  const s = sessions[0];
+
+  const fecha = s.timestamp != null ? fitTimestampToISODate(s.timestamp) : new Date().toISOString().slice(0, 10);
+  const duracion_min = s.total_elapsed_time != null ? +(s.total_elapsed_time / 60).toFixed(1) : (s.total_timer_time != null ? +(s.total_timer_time / 60).toFixed(1) : null);
+  const distancia_m = s.total_distance != null ? s.total_distance : null;
+
+  const act = {
+    fecha,
+    tipo: tipoDeporte,
+    nombre: tipoDeporte + ' ' + fecha,
+    duracion_min,
+    distancia: tipoDeporte === 'Natación'
+      ? (distancia_m != null ? +distancia_m.toFixed(0) : null)
+      : (distancia_m != null ? +(distancia_m / 1000).toFixed(2) : null),
+    fc_media: s.avg_heart_rate != null ? Math.round(s.avg_heart_rate) : null,
+    fc_max: s.max_heart_rate != null ? Math.round(s.max_heart_rate) : null,
+    desnivel: s.total_ascent != null ? Math.round(s.total_ascent) : null,
+    calorias: s.total_calories != null ? Math.round(s.total_calories) : null,
+    training_load: null, fitness: null, fatiga: null, intensidad: null,
+    fc_z1s: null, fc_z2s: null, fc_z3s: null, fc_z4s: null, fc_z5s: null,
+    race: false
+  };
+
+  if (act.tipo === 'Carrera' && act.distancia && duracion_min) {
+    act.ritmo_min_km = +(duracion_min / act.distancia).toFixed(2);
+  }
+  if (act.tipo === 'Bicicleta' && act.distancia && duracion_min) {
+    act.vel_kmh = +((act.distancia / (duracion_min / 60))).toFixed(1);
+  }
+
+  const hrVals = records.map(r => r.heart_rate).filter(v => v != null && v > 0);
+  if (hrVals.length) act.fc_min = Math.min(...hrVals);
+
+  // Zonas de FC estimadas con el mismo criterio (LTHR=172, zonas Friel) usado en el resto del historial.
+  // Es una estimación con umbral fijo: Intervals.icu puede usar un LTHR distinto por deporte y dar zonas
+  // ligeramente diferentes a las que veas allí.
+  if (hrVals.length >= 10) {
+    const LTHR = 172; // umbral de FC para carrera, usado tanto para zonas como para intensidad/carga
+    // Límites de zona (ppm) tomados de la configuración real de Intervals.icu de Juanjo para carrera:
+    // Z1 <=145, Z2 <=153, Z3 <=162, Z4 <=171, Z5 <=176, Z6 <=181, Z7 >181
+    const ZONE_LIMITS = [145, 153, 162, 171, 176, 181];
+    const zonas = [0, 0, 0, 0, 0, 0, 0]; // segundos en Z1..Z7 (1 registro ≈ 1 segundo)
+    for (const hr of hrVals) {
+      let z = 6; // por defecto Z7 (por encima de todos los límites)
+      for (let i = 0; i < ZONE_LIMITS.length; i++) {
+        if (hr <= ZONE_LIMITS[i]) { z = i; break; }
+      }
+      zonas[z]++;
+    }
+    act.fc_z1s = zonas[0]; act.fc_z2s = zonas[1]; act.fc_z3s = zonas[2];
+    act.fc_z4s = zonas[3]; act.fc_z5s = zonas[4]; act.fc_z6s = zonas[5]; act.fc_z7s = zonas[6];
+    act.zonas_estimadas = true; // marca para distinguir de zonas calculadas por Intervals.icu directamente
+
+    // Intensidad y carga (Training Load) estimadas con el mismo LTHR=172.
+    // Formula TSS clasica: TL = (duracion_seg * intensidad_frac^2) / 3600 * 100, verificada contra
+    // 8 carreras reales de Intervals.icu con error medio de ~2.7 puntos de intensidad.
+    const fcMediaSesion = hrVals.reduce((s,v)=>s+v,0) / hrVals.length;
+    act.intensidad = +((fcMediaSesion / LTHR) * 100).toFixed(1);
+    if (duracion_min != null) {
+      const intensidadFrac = act.intensidad / 100;
+      act.training_load = Math.round((duracion_min * 60 * intensidadFrac * intensidadFrac) / 3600 * 100);
+    }
+  }
+
+  if (act.tipo === 'Carrera') {
+    const withDist = records.filter(r => r.distance != null && r.timestamp != null);
+    if (withDist.length > 1) {
+      const splits = [];
+      let lastKm = 0, lastTime = withDist[0].timestamp;
+      for (const r of withDist) {
+        const km = Math.floor(r.distance / 1000);
+        if (km > lastKm) {
+          const elapsedSec = r.timestamp - lastTime;
+          if (elapsedSec > 0) splits.push(+(elapsedSec / 60).toFixed(2));
+          lastKm = km;
+          lastTime = r.timestamp;
+        }
+      }
+      if (splits.length) act.splits_km = splits;
+    }
+  }
+
+  return act;
+}
+
+
+// ─────────────────────────────────────────────
+// PARSER CSV INTERVALS.ICU (validado: 103/103 actividades, 615/618 campos exactos)
+// ─────────────────────────────────────────────
+// Parser CSV genérico (respeta comillas y comas internas) + mapeo específico de
+// exportaciones de Intervals.icu a nuestro formato de actividad.
+
+function parseCSV(text) {
+  // Quitar BOM si existe
+  if (text.charCodeAt(0) === 0xFEFF) text = text.slice(1);
+  const rows = [];
+  let row = [], field = '', inQuotes = false;
+  for (let i = 0; i < text.length; i++) {
+    const c = text[i];
+    if (inQuotes) {
+      if (c === '"') {
+        if (text[i + 1] === '"') { field += '"'; i++; }
+        else inQuotes = false;
+      } else field += c;
+    } else {
+      if (c === '"') inQuotes = true;
+      else if (c === ',') { row.push(field); field = ''; }
+      else if (c === '\r') { /* ignore */ }
+      else if (c === '\n') { row.push(field); rows.push(row); row = []; field = ''; }
+      else field += c;
+    }
+  }
+  if (field.length || row.length) { row.push(field); rows.push(row); }
+  return rows.filter(r => r.length > 1 || (r.length === 1 && r[0] !== ''));
+}
+
+function csvRowsToObjects(rows) {
+  const header = rows[0];
+  return rows.slice(1).map(r => {
+    const obj = {};
+    header.forEach((h, i) => { obj[h] = r[i] != null ? r[i] : ''; });
+    return obj;
+  });
+}
+
+const INTERVALS_TIPO_MAP = { Run: 'Carrera', Swim: 'Natación', Ride: 'Bicicleta', Walk: 'Caminata', Hike: 'Senderismo' };
+
+function num(v) {
+  if (v == null || v === '') return null;
+  const n = parseFloat(v);
+  return isNaN(n) ? null : n;
+}
+
+// Convierte las filas ya parseadas de un CSV de actividades de Intervals.icu en actividades de la app
+function intervalsCSVToActivities(csvText) {
+  const rows = parseCSV(csvText);
+  if (rows.length < 2) throw new Error('El archivo CSV no contiene filas de datos.');
+  const objs = csvRowsToObjects(rows);
+
+  // Validar que parece un export de Intervals.icu (columnas clave presentes)
+  const header = rows[0];
+  const tieneColumnasEsperadas = ['start_date_local', 'type', 'moving_time', 'distance'].every(c => header.includes(c));
+  if (!tieneColumnasEsperadas) {
+    throw new Error('Este CSV no parece una exportación de actividades de Intervals.icu (faltan columnas esperadas).');
+  }
+
+  return objs.map(o => {
+    const tipoRaw = o.type;
+    const tipo = INTERVALS_TIPO_MAP[tipoRaw] || tipoRaw;
+    const fecha = (o.start_date_local || '').slice(0, 10);
+    const movingTimeS = num(o.moving_time);
+    const duracion_min = movingTimeS != null ? +(movingTimeS / 60).toFixed(1) : null;
+    const distM = num(o.distance);
+
+    const act = {
+      fecha,
+      tipo,
+      nombre: o.name || (tipo + ' ' + fecha),
+      duracion_min,
+      distancia: tipo === 'Natación'
+        ? (distM != null ? +distM.toFixed(0) : null)
+        : (distM != null ? +(distM / 1000).toFixed(2) : null),
+      fc_media: num(o.average_heartrate) != null ? Math.round(num(o.average_heartrate)) : null,
+      fc_max: num(o.max_heartrate) != null ? Math.round(num(o.max_heartrate)) : null,
+      desnivel: num(o.total_elevation_gain),
+      calorias: num(o.calories) != null ? Math.round(num(o.calories)) : null,
+      training_load: num(o.icu_training_load) != null ? Math.round(num(o.icu_training_load)) : null,
+      fitness: num(o.icu_fitness) != null ? +num(o.icu_fitness).toFixed(1) : null,
+      fatiga: num(o.icu_fatigue) != null ? +num(o.icu_fatigue).toFixed(1) : null,
+      intensidad: num(o.icu_intensity) != null ? +num(o.icu_intensity).toFixed(1) : null,
+      fc_z1s: num(o.hr_z1_secs), fc_z2s: num(o.hr_z2_secs), fc_z3s: num(o.hr_z3_secs),
+      fc_z4s: num(o.hr_z4_secs), fc_z5s: num(o.hr_z5_secs),
+      race: (o.race === 'true' || o.race === 'True'),
+    };
+
+    const avgSpeed = num(o.average_speed); // m/s
+    if (tipo === 'Carrera' && act.distancia && duracion_min) {
+      act.ritmo_min_km = +(duracion_min / act.distancia).toFixed(2);
+    }
+    if (tipo === 'Bicicleta' && avgSpeed != null) {
+      act.vel_kmh = +(avgSpeed * 3.6).toFixed(1);
+    } else if (tipo === 'Bicicleta' && act.distancia && duracion_min) {
+      act.vel_kmh = +(act.distancia / (duracion_min / 60)).toFixed(1);
+    }
+
+    return act;
+  }).filter(a => a.fecha && a.tipo); // descartar filas sin fecha o tipo válidos
+}
+
+
+// ─────────────────────────────────────────────
+// DATOS
+// ─────────────────────────────────────────────
+const ACTS_BASE = [{"fecha":"2026-06-30","tipo":"Carrera","nombre":"Carrera de mañana","duracion_min":40.6,"distancia":7.03,"fc_media":166,"fc_max":183,"desnivel":62.0,"calorias":549,"training_load":62,"fitness":null,"fatiga":null,"intensidad":96.0,"fc_z1s":12,"fc_z2s":60,"fc_z3s":718,"fc_z4s":1014,"fc_z5s":319,"race":false,"ritmo_min_km":5.78,"zona_dominante":4,"fc_min":120,"splits_km":[6.08,6.0,5.72,5.88,5.7,5.67,5.4],"fc_z6s":290,"fc_z7s":9,"zonas_estimadas":true},{"fecha":"2026-06-29","tipo":"Natación","nombre":"Morning Natación","duracion_min":41.3,"distancia":2000.0,"fc_media":null,"fc_max":null,"desnivel":null,"calorias":576,"training_load":62,"fitness":34.6,"fatiga":40.1,"intensidad":94.5,"fc_z1s":null,"fc_z2s":null,"fc_z3s":null,"fc_z4s":null,"fc_z5s":null,"race":false},{"fecha":"2026-06-28","tipo":"Bicicleta","nombre":"Morning Ciclismo","duracion_min":113.8,"distancia":38.77,"fc_media":141,"fc_max":173,"desnivel":392.0,"calorias":1044,"training_load":95,"fitness":33.9,"fatiga":36.7,"intensidad":70.6,"fc_z1s":2656,"fc_z2s":2231,"fc_z3s":1067,"fc_z4s":825,"fc_z5s":47,"race":false,"vel_kmh":20.4,"fc_z6s":0,"fc_z7s":0},{"fecha":"2026-06-26","tipo":"Natación","nombre":"Morning Natación","duracion_min":30.2,"distancia":1500.0,"fc_media":null,"fc_max":null,"desnivel":null,"calorias":440,"training_load":49,"fitness":33.2,"fatiga":32.1,"intensidad":100.3,"fc_z1s":null,"fc_z2s":null,"fc_z3s":null,"fc_z4s":null,"fc_z5s":null,"race":false},{"fecha":"2026-06-25","tipo":"Carrera","nombre":"Carrera de mañana","duracion_min":34.2,"distancia":6.0,"fc_media":null,"fc_max":null,"desnivel":45.0,"calorias":597,"training_load":null,"fitness":null,"fatiga":null,"intensidad":null,"fc_z1s":null,"fc_z2s":null,"fc_z3s":null,"fc_z4s":null,"fc_z5s":null,"race":false,"ritmo_min_km":5.71},{"fecha":"2026-06-23","tipo":"Carrera","nombre":"Morning Correr","duracion_min":41.4,"distancia":6.95,"fc_media":180,"fc_max":190,"desnivel":35.0,"calorias":634,"training_load":83,"fitness":34.4,"fatiga":39.2,"intensidad":109.7,"fc_z1s":38,"fc_z2s":3,"fc_z3s":11,"fc_z4s":158,"fc_z5s":508,"race":false,"ritmo_min_km":5.96,"fc_min":107,"splits_km":[5.97,6.33,6.1,6.52,5.95,5.58],"notas":"FC máx del sensor mostró un pico anómalo sostenido en 210ppm (probable fallo del sensor); se mantiene el valor corregido de Intervals.icu (190ppm)","fc_z6s":672,"fc_z7s":1092},{"fecha":"2026-06-22","tipo":"Natación","nombre":"Morning Natación","duracion_min":35.5,"distancia":1650.0,"fc_media":null,"fc_max":null,"desnivel":null,"calorias":509,"training_load":47,"fitness":33.3,"fatiga":32.5,"intensidad":90.9,"fc_z1s":null,"fc_z2s":null,"fc_z3s":null,"fc_z4s":null,"fc_z5s":null,"race":false},{"fecha":"2026-06-21","tipo":"Carrera","nombre":"XLI Cross Popular de Trujillo","duracion_min":30.8,"distancia":4.92,"fc_media":175,"fc_max":190,"desnivel":107.0,"calorias":435,"training_load":58,"fitness":32.9,"fatiga":30.3,"intensidad":106.3,"fc_z1s":116,"fc_z2s":9,"fc_z3s":22,"fc_z4s":234,"fc_z5s":153,"race":true,"ritmo_min_km":6.26,"fc_min":101,"splits_km":[6.5,6.47,6.73,6.02],"fc_z6s":592,"fc_z7s":720},{"fecha":"2026-06-17","tipo":"Carrera","nombre":"Morning Correr","duracion_min":29.5,"distancia":5.05,"fc_media":168,"fc_max":186,"desnivel":40.0,"calorias":386,"training_load":46,"fitness":34.7,"fatiga":39.9,"intensidad":96.7,"fc_z1s":23,"fc_z2s":76,"fc_z3s":292,"fc_z4s":602,"fc_z5s":496,"race":false,"ritmo_min_km":5.84,"fc_min":120,"splits_km":[6.12,6.07,5.93,5.73,5.37],"fc_z6s":231,"fc_z7s":40},{"fecha":"2026-06-16","tipo":"Natación","nombre":"Lunch Natación","duracion_min":42.3,"distancia":1925.0,"fc_media":null,"fc_max":null,"desnivel":null,"calorias":538,"training_load":53,"fitness":34.5,"fatiga":39.0,"intensidad":90.7,"fc_z1s":null,"fc_z2s":null,"fc_z3s":null,"fc_z4s":null,"fc_z5s":null,"race":false},{"fecha":"2026-06-14","tipo":"Bicicleta","nombre":"Morning Ciclismo","duracion_min":83.6,"distancia":29.31,"fc_media":142,"fc_max":172,"desnivel":294.0,"calorias":796,"training_load":70,"fitness":34.8,"fatiga":42.5,"intensidad":70.4,"fc_z1s":2061,"fc_z2s":1643,"fc_z3s":825,"fc_z4s":481,"fc_z5s":5,"race":false,"vel_kmh":21.0,"fc_z6s":0,"fc_z7s":0},{"fecha":"2026-06-13","tipo":"Natación","nombre":"Morning Nadar","duracion_min":44.2,"distancia":2000.0,"fc_media":null,"fc_max":null,"desnivel":null,"calorias":600,"training_load":55,"fitness":34.0,"fatiga":38.3,"intensidad":88.2,"fc_z1s":null,"fc_z2s":null,"fc_z3s":null,"fc_z4s":null,"fc_z5s":null,"race":false},{"fecha":"2026-06-11","tipo":"Carrera","nombre":"Morning Correr","duracion_min":28.8,"distancia":5.02,"fc_media":172,"fc_max":187,"desnivel":44.0,"calorias":416,"training_load":49,"fitness":34.3,"fatiga":41.2,"intensidad":101.1,"fc_z1s":28,"fc_z2s":26,"fc_z3s":96,"fc_z4s":450,"fc_z5s":585,"race":false,"ritmo_min_km":5.74,"fc_min":119,"splits_km":[6.07,5.65,5.7,5.83,5.42],"fc_z6s":402,"fc_z7s":139},{"fecha":"2026-06-10","tipo":"Bicicleta","nombre":"Morning Ciclismo","duracion_min":68.5,"distancia":24.43,"fc_media":148,"fc_max":175,"desnivel":null,"calorias":357,"training_load":66,"fitness":33.9,"fatiga":40.0,"intensidad":75.7,"fc_z1s":1095,"fc_z2s":1392,"fc_z3s":707,"fc_z4s":873,"fc_z5s":44,"race":false,"vel_kmh":21.4,"fc_z6s":0,"fc_z7s":0},{"fecha":"2026-06-08","tipo":"Natación","nombre":"Morning Nadar","duracion_min":43.6,"distancia":2000.0,"fc_media":null,"fc_max":null,"desnivel":null,"calorias":566,"training_load":56,"fitness":33.9,"fatiga":41.5,"intensidad":94.1,"fc_z1s":null,"fc_z2s":null,"fc_z3s":null,"fc_z4s":null,"fc_z5s":null,"race":false},{"fecha":"2026-06-07","tipo":"Carrera","nombre":"Morning Correr","duracion_min":29.8,"distancia":5.02,"fc_media":163,"fc_max":184,"desnivel":32.0,"calorias":331,"training_load":41,"fitness":33.4,"fatiga":39.3,"intensidad":90.8,"fc_z1s":71,"fc_z2s":187,"fc_z3s":550,"fc_z4s":592,"fc_z5s":205,"race":false,"ritmo_min_km":5.94,"fc_min":121,"splits_km":[6.13,5.92,6.57,5.78,5.32],"fc_z6s":145,"fc_z7s":38},{"fecha":"2026-06-06","tipo":"Natación","nombre":"Morning Nadar","duracion_min":50.6,"distancia":2350.0,"fc_media":null,"fc_max":null,"desnivel":null,"calorias":563,"training_load":67,"fitness":33.2,"fatiga":39.1,"intensidad":96.0,"fc_z1s":null,"fc_z2s":null,"fc_z3s":null,"fc_z4s":null,"fc_z5s":null,"race":false},{"fecha":"2026-06-04","tipo":"Carrera","nombre":"Morning Correr","duracion_min":30.1,"distancia":5.16,"fc_media":164,"fc_max":183,"desnivel":7.0,"calorias":409,"training_load":43,"fitness":33.2,"fatiga":40.1,"intensidad":92.6,"fc_z1s":50,"fc_z2s":67,"fc_z3s":456,"fc_z4s":1046,"fc_z5s":106,"race":false,"ritmo_min_km":5.83,"fc_min":112,"splits_km":[6.08,5.8,6.0,5.9,5.57],"fc_z6s":69,"fc_z7s":10},{"fecha":"2026-06-03","tipo":"Bicicleta","nombre":"Morning Ciclismo","duracion_min":63.4,"distancia":21.62,"fc_media":139,"fc_max":171,"desnivel":221.0,"calorias":523,"training_load":49,"fitness":33.0,"fatiga":39.7,"intensidad":67.1,"fc_z1s":1818,"fc_z2s":1402,"fc_z3s":324,"fc_z4s":260,"fc_z5s":0,"race":false,"vel_kmh":20.5,"fc_z6s":0,"fc_z7s":0},{"fecha":"2026-06-01","tipo":"Natación","nombre":"Morning Nadar","duracion_min":49.2,"distancia":2250.0,"fc_media":null,"fc_max":null,"desnivel":null,"calorias":564,"training_load":63,"fitness":33.4,"fatiga":44.1,"intensidad":93.7,"fc_z1s":null,"fc_z2s":null,"fc_z3s":null,"fc_z4s":null,"fc_z5s":null,"race":false},{"fecha":"2026-05-31","tipo":"Carrera","nombre":"Morning Correr","duracion_min":28.2,"distancia":5.03,"fc_media":172,"fc_max":187,"desnivel":6.0,"calorias":333,"training_load":48,"fitness":32.6,"fatiga":41.2,"intensidad":101.1,"fc_z1s":28,"fc_z2s":7,"fc_z3s":58,"fc_z4s":700,"fc_z5s":341,"race":false,"ritmo_min_km":5.61,"fc_min":123,"splits_km":[5.8,5.78,5.95,5.25,5.3],"fc_z6s":407,"fc_z7s":150},{"fecha":"2026-05-30","tipo":"Natación","nombre":"Morning Nadar","duracion_min":46.3,"distancia":2025.0,"fc_media":null,"fc_max":null,"desnivel":null,"calorias":592,"training_load":52,"fitness":32.3,"fatiga":40.1,"intensidad":87.1,"fc_z1s":null,"fc_z2s":null,"fc_z3s":null,"fc_z4s":null,"fc_z5s":null,"race":false},{"fecha":"2026-05-29","tipo":"Carrera","nombre":"Morning Correr","duracion_min":29.4,"distancia":5.04,"fc_media":172,"fc_max":186,"desnivel":31.0,"calorias":344,"training_load":51,"fitness":31.8,"fatiga":38.3,"intensidad":102.0,"fc_z1s":101,"fc_z2s":5,"fc_z3s":10,"fc_z4s":244,"fc_z5s":755,"race":false,"ritmo_min_km":5.83,"fc_min":94,"splits_km":[5.7,5.83,5.98,5.93,5.82],"fc_z6s":526,"fc_z7s":121},{"fecha":"2026-05-27","tipo":"Bicicleta","nombre":"Morning Ciclismo","duracion_min":87.9,"distancia":31.39,"fc_media":148,"fc_max":179,"desnivel":301.0,"calorias":775,"training_load":87,"fitness":32.1,"fatiga":42.0,"intensidad":76.8,"fc_z1s":1377,"fc_z2s":1689,"fc_z3s":850,"fc_z4s":1143,"fc_z5s":212,"race":false,"vel_kmh":21.4,"fc_z6s":3,"fc_z7s":0},{"fecha":"2026-05-26","tipo":"Natación","nombre":"Morning Nadar","duracion_min":52.2,"distancia":2375.0,"fc_media":null,"fc_max":null,"desnivel":null,"calorias":687,"training_load":66,"fitness":30.8,"fatiga":35.0,"intensidad":92.2,"fc_z1s":null,"fc_z2s":null,"fc_z3s":null,"fc_z4s":null,"fc_z5s":null,"race":false},{"fecha":"2026-05-24","tipo":"Bicicleta","nombre":"Morning Ciclismo","duracion_min":93.8,"distancia":36.63,"fc_media":154,"fc_max":181,"desnivel":184.0,"calorias":875,"training_load":106,"fitness":30.6,"fatiga":34.9,"intensidad":82.0,"fc_z1s":774,"fc_z2s":1515,"fc_z3s":1427,"fc_z4s":1428,"fc_z5s":411,"race":false,"vel_kmh":23.4,"fc_z6s":76,"fc_z7s":0},{"fecha":"2026-05-20","tipo":"Bicicleta","nombre":"Morning Ciclismo","duracion_min":92.2,"distancia":32.62,"fc_media":154,"fc_max":181,"desnivel":304.0,"calorias":910,"training_load":106,"fitness":31.0,"fatiga":36.9,"intensidad":82.4,"fc_z1s":753,"fc_z2s":1551,"fc_z3s":1229,"fc_z4s":1351,"fc_z5s":447,"race":false,"vel_kmh":21.2,"fc_z6s":205,"fc_z7s":0},{"fecha":"2026-05-18","tipo":"Natación","nombre":"Morning Nadar","duracion_min":52.8,"distancia":2450.0,"fc_media":null,"fc_max":null,"desnivel":null,"calorias":613,"training_load":70,"fitness":29.9,"fatiga":30.3,"intensidad":94.0,"fc_z1s":null,"fc_z2s":null,"fc_z3s":null,"fc_z4s":null,"fc_z5s":null,"race":false},{"fecha":"2026-05-14","tipo":"Bicicleta","nombre":"Morning Ciclismo","duracion_min":152.9,"distancia":61.05,"fc_media":160,"fc_max":178,"desnivel":303.0,"calorias":1471,"training_load":199,"fitness":31.0,"fatiga":37.2,"intensidad":88.0,"fc_z1s":360,"fc_z2s":1094,"fc_z3s":2109,"fc_z4s":5006,"fc_z5s":599,"race":false,"vel_kmh":24.0,"fc_z6s":6,"fc_z7s":0},{"fecha":"2026-05-06","tipo":"Bicicleta","nombre":"Morning Ciclismo","duracion_min":106.0,"distancia":41.62,"fc_media":152,"fc_max":182,"desnivel":182.0,"calorias":1002,"training_load":114,"fitness":31.9,"fatiga":33.5,"intensidad":80.3,"fc_z1s":480,"fc_z2s":2756,"fc_z3s":1274,"fc_z4s":1702,"fc_z5s":119,"race":false,"vel_kmh":23.6,"fc_z6s":27,"fc_z7s":1},{"fecha":"2026-05-01","tipo":"Bicicleta","nombre":"Afternoon Ciclismo","duracion_min":86.0,"distancia":33.12,"fc_media":151,"fc_max":179,"desnivel":179.0,"calorias":795,"training_load":91,"fitness":32.9,"fatiga":37.5,"intensidad":79.1,"fc_z1s":762,"fc_z2s":1660,"fc_z3s":1466,"fc_z4s":1142,"fc_z5s":119,"race":false,"vel_kmh":23.1,"fc_z6s":15,"fc_z7s":0},{"fecha":"2026-04-27","tipo":"Bicicleta","nombre":"Morning Ciclismo","duracion_min":117.3,"distancia":39.19,"fc_media":142,"fc_max":175,"desnivel":379.0,"calorias":1057,"training_load":99,"fitness":33.8,"fatiga":45.0,"intensidad":70.7,"fc_z1s":2963,"fc_z2s":1930,"fc_z3s":1016,"fc_z4s":1068,"fc_z5s":60,"race":false,"vel_kmh":20.0,"fc_z6s":0,"fc_z7s":0},{"fecha":"2026-04-25","tipo":"Bicicleta","nombre":"Morning Ciclismo","duracion_min":116.2,"distancia":45.76,"fc_media":148,"fc_max":176,"desnivel":241.0,"calorias":1244,"training_load":113,"fitness":33.0,"fatiga":42.3,"intensidad":76.0,"fc_z1s":1030,"fc_z2s":3681,"fc_z3s":1332,"fc_z4s":842,"fc_z5s":87,"race":false,"vel_kmh":23.6,"fc_z6s":0,"fc_z7s":0},{"fecha":"2026-04-21","tipo":"Natación","nombre":"Morning Nadar","duracion_min":54.2,"distancia":2500.0,"fc_media":null,"fc_max":null,"desnivel":null,"calorias":714,"training_load":71,"fitness":33.4,"fatiga":48.3,"intensidad":97.1,"fc_z1s":null,"fc_z2s":null,"fc_z3s":null,"fc_z4s":null,"fc_z5s":null,"race":false},{"fecha":"2026-04-20","tipo":"Bicicleta","nombre":"Morning Ciclismo","duracion_min":121.7,"distancia":42.25,"fc_media":143,"fc_max":178,"desnivel":433.0,"calorias":1172,"training_load":106,"fitness":32.5,"fatiga":44.8,"intensidad":72.0,"fc_z1s":2937,"fc_z2s":2168,"fc_z3s":892,"fc_z4s":1121,"fc_z5s":170,"race":false,"vel_kmh":20.8,"fc_z6s":16,"fc_z7s":0},{"fecha":"2026-04-17","tipo":"Bicicleta","nombre":"Afternoon Ciclismo","duracion_min":106.2,"distancia":41.39,"fc_media":155,"fc_max":184,"desnivel":246.0,"calorias":1124,"training_load":122,"fitness":32.2,"fatiga":47.2,"intensidad":82.8,"fc_z1s":776,"fc_z2s":1690,"fc_z3s":1833,"fc_z4s":1349,"fc_z5s":303,"race":false,"vel_kmh":23.4,"fc_z6s":378,"fc_z7s":47},{"fecha":"2026-04-15","tipo":"Bicicleta","nombre":"Afternoon Ciclismo","duracion_min":117.1,"distancia":40.81,"fc_media":152,"fc_max":182,"desnivel":406.0,"calorias":1139,"training_load":131,"fitness":30.8,"fatiga":41.2,"intensidad":80.8,"fc_z1s":1514,"fc_z2s":1709,"fc_z3s":1080,"fc_z4s":1859,"fc_z5s":645,"race":false,"vel_kmh":20.9,"fc_z6s":233,"fc_z7s":1},{"fecha":"2026-04-13","tipo":"Natación","nombre":"Morning Nadar","duracion_min":55.4,"distancia":2475.0,"fc_media":null,"fc_max":null,"desnivel":null,"calorias":707,"training_load":66,"fitness":29.1,"fatiga":31.6,"intensidad":95.8,"fc_z1s":null,"fc_z2s":null,"fc_z3s":null,"fc_z4s":null,"fc_z5s":null,"race":false},{"fecha":"2026-04-10","tipo":"Bicicleta","nombre":"Afternoon Ciclismo","duracion_min":43.9,"distancia":18.4,"fc_media":161,"fc_max":180,"desnivel":88.0,"calorias":513,"training_load":57,"fitness":29.5,"fatiga":35.0,"intensidad":88.1,"fc_z1s":100,"fc_z2s":403,"fc_z3s":549,"fc_z4s":1244,"fc_z5s":276,"race":false,"vel_kmh":25.1,"fc_z6s":1,"fc_z7s":0},{"fecha":"2026-04-10","tipo":"Bicicleta","nombre":"Afternoon Ciclismo","duracion_min":50.5,"distancia":18.24,"fc_media":161,"fc_max":177,"desnivel":93.0,"calorias":490,"training_load":67,"fitness":29.5,"fatiga":35.0,"intensidad":88.7,"fc_z1s":24,"fc_z2s":304,"fc_z3s":752,"fc_z4s":1851,"fc_z5s":96,"race":false,"vel_kmh":21.7,"fc_z6s":1,"fc_z7s":0},{"fecha":"2026-04-07","tipo":"Natación","nombre":"Lunch Nadar","duracion_min":60.4,"distancia":2175.0,"fc_media":null,"fc_max":null,"desnivel":null,"calorias":631,"training_load":38,"fitness":28.6,"fatiga":28.4,"intensidad":74.8,"fc_z1s":null,"fc_z2s":null,"fc_z3s":null,"fc_z4s":null,"fc_z5s":null,"race":false},{"fecha":"2026-04-02","tipo":"Bicicleta","nombre":"Morning Ciclismo","duracion_min":82.9,"distancia":30.32,"fc_media":147,"fc_max":178,"desnivel":327.0,"calorias":844,"training_load":80,"fitness":31.2,"fatiga":47.6,"intensidad":75.0,"fc_z1s":1133,"fc_z2s":1793,"fc_z3s":1132,"fc_z4s":861,"fc_z5s":52,"race":false,"vel_kmh":21.9,"fc_z6s":2,"fc_z7s":0},{"fecha":"2026-03-31","tipo":"Bicicleta","nombre":"Afternoon Ciclismo","duracion_min":112.0,"distancia":45.41,"fc_media":160,"fc_max":185,"desnivel":188.0,"calorias":1247,"training_load":145,"fitness":30.7,"fatiga":49.2,"intensidad":87.7,"fc_z1s":245,"fc_z2s":444,"fc_z3s":1758,"fc_z4s":4093,"fc_z5s":141,"race":false,"vel_kmh":24.3,"fc_z6s":34,"fc_z7s":6},{"fecha":"2026-03-30","tipo":"Natación","nombre":"Afternoon Nadar","duracion_min":54.0,"distancia":2100.0,"fc_media":null,"fc_max":null,"desnivel":null,"calorias":603,"training_load":42,"fitness":28.0,"fatiga":34.5,"intensidad":81.3,"fc_z1s":null,"fc_z2s":null,"fc_z3s":null,"fc_z4s":null,"fc_z5s":null,"race":false},{"fecha":"2026-03-27","tipo":"Bicicleta","nombre":"Afternoon Ciclismo","duracion_min":98.7,"distancia":41.1,"fc_media":160,"fc_max":182,"desnivel":181.0,"calorias":1136,"training_load":133,"fitness":29.0,"fatiga":44.3,"intensidad":89.1,"fc_z1s":352,"fc_z2s":299,"fc_z3s":1085,"fc_z4s":3318,"fc_z5s":813,"race":false,"vel_kmh":25.0,"fc_z6s":51,"fc_z7s":2},{"fecha":"2026-03-24","tipo":"Bicicleta","nombre":"Morning Ciclismo","duracion_min":88.7,"distancia":31.48,"fc_media":142,"fc_max":173,"desnivel":303.0,"calorias":861,"training_load":76,"fitness":27.8,"fatiga":40.9,"intensidad":71.3,"fc_z1s":2108,"fc_z2s":1682,"fc_z3s":766,"fc_z4s":746,"fc_z5s":22,"race":false,"vel_kmh":21.3,"fc_z6s":0,"fc_z7s":0},{"fecha":"2026-03-23","tipo":"Natación","nombre":"Lunch Nadar","duracion_min":57.9,"distancia":1950.0,"fc_media":null,"fc_max":null,"desnivel":null,"calorias":543,"training_load":30,"fitness":26.6,"fatiga":35.5,"intensidad":70.1,"fc_z1s":null,"fc_z2s":null,"fc_z3s":null,"fc_z4s":null,"fc_z5s":null,"race":false},{"fecha":"2026-03-22","tipo":"Bicicleta","nombre":"Morning Ciclismo","duracion_min":90.0,"distancia":23.8,"fc_media":104,"fc_max":161,"desnivel":157.0,"calorias":442,"training_load":23,"fitness":26.5,"fatiga":36.3,"intensidad":38.3,"fc_z1s":5325,"fc_z2s":57,"fc_z3s":20,"fc_z4s":1,"fc_z5s":0,"race":false,"vel_kmh":15.9,"fc_z6s":0,"fc_z7s":0},{"fecha":"2026-03-21","tipo":"Natación","nombre":"Morning Nadar","duracion_min":58.4,"distancia":2675.0,"fc_media":null,"fc_max":null,"desnivel":null,"calorias":734,"training_load":75,"fitness":26.6,"fatiga":38.4,"intensidad":95.0,"fc_z1s":null,"fc_z2s":null,"fc_z3s":null,"fc_z4s":null,"fc_z5s":null,"race":false},{"fecha":"2026-03-19","tipo":"Bicicleta","nombre":"Morning Ciclismo","duracion_min":57.8,"distancia":20.44,"fc_media":130,"fc_max":175,"desnivel":null,"calorias":302,"training_load":39,"fitness":26.1,"fatiga":37.8,"intensidad":63.5,"fc_z1s":1794,"fc_z2s":1006,"fc_z3s":333,"fc_z4s":306,"fc_z5s":31,"race":false,"vel_kmh":21.2,"fc_z6s":0,"fc_z7s":0},{"fecha":"2026-03-17","tipo":"Natación","nombre":"Lunch Nadar","duracion_min":43.5,"distancia":2275.0,"fc_media":null,"fc_max":null,"desnivel":null,"calorias":629,"training_load":83,"fitness":26.4,"fatiga":43.3,"intensidad":108.9,"fc_z1s":null,"fc_z2s":null,"fc_z3s":null,"fc_z4s":null,"fc_z5s":null,"race":false},{"fecha":"2026-03-16","tipo":"Bicicleta","nombre":"Morning Ciclismo","duracion_min":104.3,"distancia":41.82,"fc_media":153,"fc_max":177,"desnivel":198.0,"calorias":1147,"training_load":116,"fitness":25.0,"fatiga":37.3,"intensidad":81.1,"fc_z1s":793,"fc_z2s":1367,"fc_z3s":2062,"fc_z4s":1865,"fc_z5s":162,"race":false,"vel_kmh":24.1,"fc_z6s":11,"fc_z7s":0},{"fecha":"2026-03-14","tipo":"Caminata","nombre":"Lunch Caminar","duracion_min":18.2,"distancia":1.51,"fc_media":101,"fc_max":125,"desnivel":null,"calorias":133,"training_load":4,"fitness":23.4,"fatiga":29.0,"intensidad":32.9,"fc_z1s":1091,"fc_z2s":0,"fc_z3s":0,"fc_z4s":0,"fc_z5s":0,"race":false,"fc_z6s":0,"fc_z7s":0},{"fecha":"2026-03-13","tipo":"Bicicleta","nombre":"Afternoon Ciclismo","duracion_min":81.4,"distancia":30.88,"fc_media":157,"fc_max":185,"desnivel":169.0,"calorias":869,"training_load":106,"fitness":23.8,"fatiga":32.9,"intensidad":85.9,"fc_z1s":573,"fc_z2s":630,"fc_z3s":681,"fc_z4s":2010,"fc_z5s":779,"race":false,"vel_kmh":22.8,"fc_z6s":182,"fc_z7s":31},{"fecha":"2026-03-10","tipo":"Natación","nombre":"Lunch Nadar","duracion_min":68.0,"distancia":2825.0,"fc_media":null,"fc_max":null,"desnivel":null,"calorias":817,"training_load":65,"fitness":22.9,"fatiga":28.8,"intensidad":90.5,"fc_z1s":null,"fc_z2s":null,"fc_z3s":null,"fc_z4s":null,"fc_z5s":null,"race":false},{"fecha":"2026-03-08","tipo":"Bicicleta","nombre":"Morning Ciclismo","duracion_min":62.9,"distancia":24.3,"fc_media":161,"fc_max":181,"desnivel":135.0,"calorias":672,"training_load":83,"fitness":22.4,"fatiga":26.8,"intensidad":88.8,"fc_z1s":155,"fc_z2s":570,"fc_z3s":785,"fc_z4s":1639,"fc_z5s":509,"race":false,"vel_kmh":23.2,"fc_z6s":114,"fc_z7s":0},{"fecha":"2026-03-03","tipo":"Natación","nombre":"Lunch Nadar","duracion_min":61.1,"distancia":2075.0,"fc_media":null,"fc_max":null,"desnivel":null,"calorias":601,"training_load":32,"fitness":23.1,"fatiga":32.2,"intensidad":69.8,"fc_z1s":null,"fc_z2s":null,"fc_z3s":null,"fc_z4s":null,"fc_z5s":null,"race":false},{"fecha":"2026-02-28","tipo":"Natación","nombre":"Evening Nadar","duracion_min":48.8,"distancia":2200.0,"fc_media":null,"fc_max":null,"desnivel":null,"calorias":603,"training_load":60,"fitness":24.0,"fatiga":42.9,"intensidad":94.3,"fc_z1s":null,"fc_z2s":null,"fc_z3s":null,"fc_z4s":null,"fc_z5s":null,"race":false},{"fecha":"2026-02-27","tipo":"Bicicleta","nombre":"Afternoon Ciclismo","duracion_min":103.6,"distancia":34.3,"fc_media":143,"fc_max":190,"desnivel":null,"calorias":531,"training_load":104,"fitness":23.1,"fatiga":40.3,"intensidad":77.1,"fc_z1s":2067,"fc_z2s":1045,"fc_z3s":756,"fc_z4s":1574,"fc_z5s":403,"race":false,"vel_kmh":19.9,"fc_z6s":222,"fc_z7s":149},{"fecha":"2026-02-25","tipo":"Bicicleta","nombre":"Morning Ciclismo","duracion_min":93.1,"distancia":30.84,"fc_media":141,"fc_max":178,"desnivel":null,"calorias":477,"training_load":80,"fitness":21.7,"fatiga":35.2,"intensidad":71.2,"fc_z1s":2301,"fc_z2s":1334,"fc_z3s":728,"fc_z4s":1129,"fc_z5s":88,"race":false,"vel_kmh":19.9,"fc_z6s":7,"fc_z7s":0},{"fecha":"2026-02-24","tipo":"Natación","nombre":"Lunch Nadar","duracion_min":61.6,"distancia":2150.0,"fc_media":null,"fc_max":null,"desnivel":null,"calorias":618,"training_load":35,"fitness":20.3,"fatiga":28.3,"intensidad":72.6,"fc_z1s":null,"fc_z2s":null,"fc_z3s":null,"fc_z4s":null,"fc_z5s":null,"race":false},{"fecha":"2026-02-22","tipo":"Bicicleta","nombre":"Morning Ciclismo","duracion_min":105.3,"distancia":41.39,"fc_media":162,"fc_max":182,"desnivel":152.0,"calorias":1134,"training_load":144,"fitness":20.4,"fatiga":31.4,"intensidad":90.1,"fc_z1s":529,"fc_z2s":634,"fc_z3s":737,"fc_z4s":3181,"fc_z5s":909,"race":false,"vel_kmh":23.6,"fc_z6s":325,"fc_z7s":4},{"fecha":"2026-02-19","tipo":"Bicicleta","nombre":"Morning Ciclismo","duracion_min":80.3,"distancia":30.41,"fc_media":155,"fc_max":179,"desnivel":150.0,"calorias":831,"training_load":95,"fitness":18.3,"fatiga":18.8,"intensidad":83.4,"fc_z1s":604,"fc_z2s":827,"fc_z3s":915,"fc_z4s":2298,"fc_z5s":164,"race":false,"vel_kmh":22.7,"fc_z6s":10,"fc_z7s":0},{"fecha":"2026-02-18","tipo":"Caminata","nombre":"Afternoon Caminar","duracion_min":36.6,"distancia":4.04,"fc_media":116,"fc_max":136,"desnivel":18.0,"calorias":250,"training_load":14,"fitness":16.4,"fatiga":7.1,"intensidad":47.9,"fc_z1s":2195,"fc_z2s":0,"fc_z3s":0,"fc_z4s":0,"fc_z5s":0,"race":false,"fc_z6s":0,"fc_z7s":0},{"fecha":"2026-02-16","tipo":"Senderismo","nombre":"Afternoon Caminata","duracion_min":36.9,"distancia":1.97,"fc_media":104,"fc_max":121,"desnivel":1.0,"calorias":184,"training_load":9,"fitness":16.9,"fatiga":7.0,"intensidad":36.1,"fc_z1s":2216,"fc_z2s":0,"fc_z3s":0,"fc_z4s":0,"fc_z5s":0,"race":false,"fc_z6s":0,"fc_z7s":0},{"fecha":"2026-02-10","tipo":"Natación","nombre":"Lunch Nadar","duracion_min":56.2,"distancia":2025.0,"fc_media":null,"fc_max":null,"desnivel":null,"calorias":469,"training_load":35,"fitness":19.2,"fatiga":13.6,"intensidad":76.7,"fc_z1s":null,"fc_z2s":null,"fc_z3s":null,"fc_z4s":null,"fc_z5s":null,"race":false},{"fecha":"2026-02-07","tipo":"Natación","nombre":"Evening Nadar","duracion_min":45.8,"distancia":1900.0,"fc_media":null,"fc_max":null,"desnivel":null,"calorias":535,"training_load":44,"fitness":19.8,"fatiga":13.7,"intensidad":86.5,"fc_z1s":null,"fc_z2s":null,"fc_z3s":null,"fc_z4s":null,"fc_z5s":null,"race":false},{"fecha":"2026-02-03","tipo":"Natación","nombre":"Lunch Nadar","duracion_min":40.5,"distancia":1975.0,"fc_media":null,"fc_max":null,"desnivel":null,"calorias":530,"training_load":63,"fitness":20.6,"fatiga":14.0,"intensidad":102.5,"fc_z1s":null,"fc_z2s":null,"fc_z3s":null,"fc_z4s":null,"fc_z5s":null,"race":false},{"fecha":"2026-01-24","tipo":"Natación","nombre":"Afternoon Nadar","duracion_min":66.5,"distancia":2850.0,"fc_media":null,"fc_max":null,"desnivel":null,"calorias":845,"training_load":70,"fitness":24.3,"fatiga":23.3,"intensidad":85.1,"fc_z1s":null,"fc_z2s":null,"fc_z3s":null,"fc_z4s":null,"fc_z5s":null,"race":false},{"fecha":"2026-01-20","tipo":"Natación","nombre":"Lunch Nadar","duracion_min":62.2,"distancia":2275.0,"fc_media":null,"fc_max":null,"desnivel":null,"calorias":638,"training_load":41,"fitness":24.9,"fatiga":24.7,"intensidad":77.7,"fc_z1s":null,"fc_z2s":null,"fc_z3s":null,"fc_z4s":null,"fc_z5s":null,"race":false},{"fecha":"2026-01-14","tipo":"Bicicleta","nombre":"Morning Ciclismo","duracion_min":60.7,"distancia":24.58,"fc_media":156,"fc_max":180,"desnivel":136.0,"calorias":685,"training_load":74,"fitness":27.6,"fatiga":45.4,"intensidad":85.3,"fc_z1s":337,"fc_z2s":622,"fc_z3s":721,"fc_z4s":1699,"fc_z5s":248,"race":false,"vel_kmh":24.3,"fc_z6s":14,"fc_z7s":0},{"fecha":"2026-01-13","tipo":"Natación","nombre":"Lunch Nadar","duracion_min":61.7,"distancia":2600.0,"fc_media":null,"fc_max":null,"desnivel":null,"calorias":733,"training_load":62,"fitness":26.5,"fatiga":41.1,"intensidad":86.2,"fc_z1s":null,"fc_z2s":null,"fc_z3s":null,"fc_z4s":null,"fc_z5s":null,"race":false},{"fecha":"2026-01-11","tipo":"Bicicleta","nombre":"Afternoon Ciclismo","duracion_min":111.3,"distancia":40.85,"fc_media":142,"fc_max":177,"desnivel":480.0,"calorias":1128,"training_load":96,"fitness":26.2,"fatiga":43.6,"intensidad":71.2,"fc_z1s":2567,"fc_z2s":2244,"fc_z3s":900,"fc_z4s":786,"fc_z5s":181,"race":false,"vel_kmh":22.0,"fc_z6s":1,"fc_z7s":0},{"fecha":"2026-01-10","tipo":"Natación","nombre":"Lunch Nadar","duracion_min":47.8,"distancia":2525.0,"fc_media":null,"fc_max":null,"desnivel":null,"calorias":683,"training_load":94,"fitness":24.5,"fatiga":35.6,"intensidad":112.3,"fc_z1s":null,"fc_z2s":null,"fc_z3s":null,"fc_z4s":null,"fc_z5s":null,"race":false},{"fecha":"2026-01-06","tipo":"Bicicleta","nombre":"Afternoon Ciclismo","duracion_min":71.8,"distancia":25.5,"fc_media":142,"fc_max":178,"desnivel":307.0,"calorias":698,"training_load":62,"fitness":24.5,"fatiga":40.9,"intensidad":71.6,"fc_z1s":1560,"fc_z2s":1401,"fc_z3s":623,"fc_z4s":629,"fc_z5s":92,"race":false,"vel_kmh":21.3,"fc_z6s":6,"fc_z7s":0},{"fecha":"2026-01-04","tipo":"Bicicleta","nombre":"Afternoon Ciclismo","duracion_min":96.3,"distancia":36.79,"fc_media":150,"fc_max":180,"desnivel":176.0,"calorias":1007,"training_load":111,"fitness":24.2,"fatiga":43.4,"intensidad":83.0,"fc_z1s":1031,"fc_z2s":411,"fc_z3s":913,"fc_z4s":3128,"fc_z5s":281,"race":false,"vel_kmh":22.9,"fc_z6s":18,"fc_z7s":0},{"fecha":"2026-01-03","tipo":"Natación","nombre":"Afternoon Nadar","duracion_min":45.9,"distancia":2425.0,"fc_media":null,"fc_max":null,"desnivel":null,"calorias":651,"training_load":90,"fitness":22.1,"fatiga":33.1,"intensidad":113.0,"fc_z1s":null,"fc_z2s":null,"fc_z3s":null,"fc_z4s":null,"fc_z5s":null,"race":false},{"fecha":"2025-12-30","tipo":"Natación","nombre":"Night Nadar","duracion_min":45.5,"distancia":2300.0,"fc_media":null,"fc_max":null,"desnivel":null,"calorias":627,"training_load":78,"fitness":22.0,"fatiga":37.3,"intensidad":105.7,"fc_z1s":null,"fc_z2s":null,"fc_z3s":null,"fc_z4s":null,"fc_z5s":null,"race":false},{"fecha":"2025-12-29","tipo":"Bicicleta","nombre":"Afternoon Ciclismo","duracion_min":97.8,"distancia":33.68,"fc_media":145,"fc_max":179,"desnivel":363.0,"calorias":955,"training_load":91,"fitness":20.7,"fatiga":31.1,"intensidad":73.1,"fc_z1s":1731,"fc_z2s":2129,"fc_z3s":844,"fc_z4s":961,"fc_z5s":102,"race":false,"vel_kmh":20.7,"fc_z6s":105,"fc_z7s":0},{"fecha":"2025-12-26","tipo":"Bicicleta","nombre":"Morning Ciclismo","duracion_min":88.0,"distancia":32.88,"fc_media":144,"fc_max":170,"desnivel":147.0,"calorias":888,"training_load":79,"fitness":19.9,"fatiga":29.1,"intensidad":72.9,"fc_z1s":1460,"fc_z2s":2128,"fc_z3s":1129,"fc_z4s":563,"fc_z5s":0,"race":false,"vel_kmh":22.4,"fc_z6s":0,"fc_z7s":0},{"fecha":"2025-12-22","tipo":"Natación","nombre":"Lunch Nadar","duracion_min":72.9,"distancia":4025.0,"fc_media":null,"fc_max":null,"desnivel":null,"calorias":1075,"training_load":164,"fitness":19.8,"fatiga":32.9,"intensidad":116.7,"fc_z1s":null,"fc_z2s":null,"fc_z3s":null,"fc_z4s":null,"fc_z5s":null,"race":false},{"fecha":"2025-12-14","tipo":"Bicicleta","nombre":"Afternoon Ciclismo","duracion_min":82.1,"distancia":32.88,"fc_media":158,"fc_max":181,"desnivel":157.0,"calorias":900,"training_load":99,"fitness":19.3,"fatiga":34.8,"intensidad":84.6,"fc_z1s":174,"fc_z2s":1139,"fc_z3s":1771,"fc_z4s":1630,"fc_z5s":204,"race":false,"vel_kmh":24.0,"fc_z6s":10,"fc_z7s":0},{"fecha":"2025-12-13","tipo":"Natación","nombre":"Afternoon Nadar","duracion_min":51.5,"distancia":2025.0,"fc_media":null,"fc_max":null,"desnivel":null,"calorias":707,"training_load":42,"fitness":17.4,"fatiga":25.0,"intensidad":75.3,"fc_z1s":null,"fc_z2s":null,"fc_z3s":null,"fc_z4s":null,"fc_z5s":null,"race":false},{"fecha":"2025-12-11","tipo":"Natación","nombre":"Lunch Nadar","duracion_min":45.9,"distancia":2300.0,"fc_media":null,"fc_max":null,"desnivel":null,"calorias":640,"training_load":77,"fitness":17.2,"fatiga":25.8,"intensidad":104.7,"fc_z1s":null,"fc_z2s":null,"fc_z3s":null,"fc_z4s":null,"fc_z5s":null,"race":false},{"fecha":"2025-12-07","tipo":"Bicicleta","nombre":"Afternoon Ciclismo","duracion_min":53.2,"distancia":20.85,"fc_media":138,"fc_max":186,"desnivel":87.0,"calorias":575,"training_load":51,"fitness":16.9,"fatiga":27.5,"intensidad":75.7,"fc_z1s":1423,"fc_z2s":44,"fc_z3s":149,"fc_z4s":987,"fc_z5s":407,"race":false,"vel_kmh":23.5,"fc_z6s":143,"fc_z7s":38},{"fecha":"2025-12-07","tipo":"Bicicleta","nombre":"Ruta en MTB","duracion_min":103.8,"distancia":41.96,"fc_media":null,"fc_max":null,"desnivel":134.0,"calorias":null,"training_load":null,"fitness":16.9,"fatiga":27.5,"intensidad":null,"fc_z1s":null,"fc_z2s":null,"fc_z3s":null,"fc_z4s":null,"fc_z5s":null,"race":false,"vel_kmh":24.3},{"fecha":"2025-12-04","tipo":"Natación","nombre":"Lunch Nadar","duracion_min":39.2,"distancia":1925.0,"fc_media":null,"fc_max":null,"desnivel":null,"calorias":548,"training_load":62,"fitness":16.9,"fatiga":31.8,"intensidad":102.9,"fc_z1s":null,"fc_z2s":null,"fc_z3s":null,"fc_z4s":null,"fc_z5s":null,"race":false},{"fecha":"2025-12-02","tipo":"Natación","nombre":"Lunch Nadar","duracion_min":45.6,"distancia":2350.0,"fc_media":null,"fc_max":null,"desnivel":null,"calorias":616,"training_load":83,"fitness":16.2,"fatiga":31.4,"intensidad":112.6,"fc_z1s":null,"fc_z2s":null,"fc_z3s":null,"fc_z4s":null,"fc_z5s":null,"race":false},{"fecha":"2025-11-29","tipo":"Natación","nombre":"Lunch Nadar","duracion_min":45.7,"distancia":1875.0,"fc_media":null,"fc_max":null,"desnivel":null,"calorias":635,"training_load":42,"fitness":15.3,"fatiga":31.2,"intensidad":82.4,"fc_z1s":null,"fc_z2s":null,"fc_z3s":null,"fc_z4s":null,"fc_z5s":null,"race":false},{"fecha":"2025-11-27","tipo":"Bicicleta","nombre":"Morning Ciclismo","duracion_min":102.7,"distancia":34.53,"fc_media":133,"fc_max":176,"desnivel":399.0,"calorias":927,"training_load":73,"fitness":15.0,"fatiga":34.1,"intensidad":65.1,"fc_z1s":3371,"fc_z2s":1650,"fc_z3s":540,"fc_z4s":539,"fc_z5s":60,"race":false,"vel_kmh":20.2,"fc_z6s":0,"fc_z7s":0},{"fecha":"2025-11-25","tipo":"Bicicleta","nombre":"Lunch Ciclismo","duracion_min":83.4,"distancia":32.86,"fc_media":150,"fc_max":182,"desnivel":163.0,"calorias":900,"training_load":95,"fitness":13.9,"fatiga":32.4,"intensidad":82.5,"fc_z1s":913,"fc_z2s":545,"fc_z3s":982,"fc_z4s":2003,"fc_z5s":486,"race":false,"vel_kmh":23.6,"fc_z6s":73,"fc_z7s":3},{"fecha":"2025-11-23","tipo":"Bicicleta","nombre":"Morning Ciclismo","duracion_min":115.1,"distancia":38.35,"fc_media":144,"fc_max":173,"desnivel":460.0,"calorias":1080,"training_load":102,"fitness":12.3,"fatiga":26.3,"intensidad":72.5,"fc_z1s":2238,"fc_z2s":2481,"fc_z3s":1044,"fc_z4s":1102,"fc_z5s":43,"race":false,"vel_kmh":20.0,"fc_z6s":0,"fc_z7s":0},{"fecha":"2025-11-18","tipo":"Bicicleta","nombre":"Bicicleta de montaña matutina","duracion_min":136.5,"distancia":51.04,"fc_media":null,"fc_max":null,"desnivel":151.0,"calorias":null,"training_load":null,"fitness":11.1,"fatiga":25.9,"intensidad":null,"fc_z1s":null,"fc_z2s":null,"fc_z3s":null,"fc_z4s":null,"fc_z5s":null,"race":false,"vel_kmh":22.4},{"fecha":"2025-11-17","tipo":"Natación","nombre":"Lunch Nadar","duracion_min":46.9,"distancia":2300.0,"fc_media":null,"fc_max":null,"desnivel":null,"calorias":661,"training_load":74,"fitness":11.4,"fatiga":29.9,"intensidad":101.4,"fc_z1s":null,"fc_z2s":null,"fc_z3s":null,"fc_z4s":null,"fc_z5s":null,"race":false},{"fecha":"2025-11-13","tipo":"Natación","nombre":"Lunch Nadar","duracion_min":46.0,"distancia":2175.0,"fc_media":null,"fc_max":null,"desnivel":null,"calorias":633,"training_load":65,"fitness":10.6,"fatiga":35.5,"intensidad":97.2,"fc_z1s":null,"fc_z2s":null,"fc_z3s":null,"fc_z4s":null,"fc_z5s":null,"race":false},{"fecha":"2025-11-11","tipo":"Bicicleta","nombre":"Bicicleta de montaña matutina","duracion_min":121.3,"distancia":41.68,"fc_media":146,"fc_max":179,"desnivel":173.0,"calorias":null,"training_load":114,"fitness":9.5,"fatiga":35.8,"intensidad":74.8,"fc_z1s":1768,"fc_z2s":2833,"fc_z3s":1232,"fc_z4s":1351,"fc_z5s":89,"race":false,"vel_kmh":20.6,"fc_z6s":7,"fc_z7s":0},{"fecha":"2025-11-09","tipo":"Bicicleta","nombre":"Bicicleta de montaña matutina","duracion_min":77.3,"distancia":25.5,"fc_media":125,"fc_max":172,"desnivel":242.0,"calorias":null,"training_load":43,"fitness":7.2,"fatiga":27.4,"intensidad":57.3,"fc_z1s":3357,"fc_z2s":788,"fc_z3s":264,"fc_z4s":228,"fc_z5s":1,"race":false,"vel_kmh":19.8,"fc_z6s":0,"fc_z7s":0},{"fecha":"2025-11-08","tipo":"Natación","nombre":"Lunch Nadar","duracion_min":40.3,"distancia":2000.0,"fc_media":null,"fc_max":null,"desnivel":null,"calorias":488,"training_load":66,"fitness":6.3,"fatiga":25.0,"intensidad":103.5,"fc_z1s":null,"fc_z2s":null,"fc_z3s":null,"fc_z4s":null,"fc_z5s":null,"race":false},{"fecha":"2025-11-06","tipo":"Natación","nombre":"Lunch Nadar","duracion_min":60.3,"distancia":1425.0,"fc_media":null,"fc_max":null,"desnivel":null,"calorias":400,"training_load":11,"fitness":5.0,"fatiga":21.6,"intensidad":47.5,"fc_z1s":null,"fc_z2s":null,"fc_z3s":null,"fc_z4s":null,"fc_z5s":null,"race":false},{"fecha":"2025-11-04","tipo":"Bicicleta","nombre":"Afternoon Ciclismo","duracion_min":106.8,"distancia":41.61,"fc_media":150,"fc_max":177,"desnivel":177.0,"calorias":1142,"training_load":119,"fitness":5.0,"fatiga":26.8,"intensidad":81.6,"fc_z1s":976,"fc_z2s":877,"fc_z3s":1342,"fc_z4s":3121,"fc_z5s":95,"race":false,"vel_kmh":23.4,"fc_z6s":1,"fc_z7s":0},{"fecha":"2025-11-03","tipo":"Bicicleta","nombre":"Más allá del Puente La Pared","duracion_min":112.2,"distancia":37.91,"fc_media":null,"fc_max":null,"desnivel":190.0,"calorias":null,"training_load":null,"fitness":2.2,"fatiga":12.6,"intensidad":null,"fc_z1s":null,"fc_z2s":null,"fc_z3s":null,"fc_z4s":null,"fc_z5s":null,"race":false,"vel_kmh":20.3,"fc_z6s":0,"fc_z7s":0},{"fecha":"2025-11-03","tipo":"Bicicleta","nombre":"Bicicleta de montaña matutina","duracion_min":116.8,"distancia":38.75,"fc_media":142,"fc_max":175,"desnivel":331.0,"calorias":null,"training_load":95,"fitness":2.2,"fatiga":12.6,"intensidad":69.8,"fc_z1s":2690,"fc_z2s":2934,"fc_z3s":939,"fc_z4s":404,"fc_z5s":39,"race":false,"vel_kmh":19.9,"fc_z6s":0,"fc_z7s":0},{"fecha":"2025-11-01","tipo":"Bicicleta","nombre":"Bicicleta de montaña matutina","duracion_min":33.1,"distancia":12.35,"fc_media":null,"fc_max":null,"desnivel":92.0,"calorias":null,"training_load":null,"fitness":0.0,"fatiga":0.0,"intensidad":null,"fc_z1s":null,"fc_z2s":null,"fc_z3s":null,"fc_z4s":null,"fc_z5s":null,"race":false,"vel_kmh":22.4},{"fecha":"2025-11-01","tipo":"Bicicleta","nombre":"Bicicleta de montaña matutina","duracion_min":73.8,"distancia":18.85,"fc_media":null,"fc_max":null,"desnivel":315.0,"calorias":null,"training_load":null,"fitness":0.0,"fatiga":0.0,"intensidad":null,"fc_z1s":null,"fc_z2s":null,"fc_z3s":null,"fc_z4s":null,"fc_z5s":null,"race":false,"vel_kmh":15.3},{"fecha":"2025-10-28","tipo":"Bicicleta","nombre":"Bicicleta de montaña matutina","duracion_min":111.0,"distancia":36.13,"fc_media":null,"fc_max":null,"desnivel":326.0,"calorias":null,"training_load":null,"fitness":null,"fatiga":null,"intensidad":null,"fc_z1s":null,"fc_z2s":null,"fc_z3s":null,"fc_z4s":null,"fc_z5s":null,"race":false,"vel_kmh":19.5}];
+const LOCAL = JSON.parse(localStorage.getItem('trainai')||'[]');
+let ACTS = [...LOCAL, ...ACTS_BASE];
+
+const carr = ()=>ACTS.filter(a=>a.tipo==='Carrera');
+const nat  = ()=>ACTS.filter(a=>a.tipo==='Natación');
+const bici = ()=>ACTS.filter(a=>a.tipo==='Bicicleta');
+
+// Cálculos derivados SIEMPRE en vivo a partir de ACTS — nunca hardcodear
+function calcStats(){
+  const c=carr(), n=nat(), b=bici();
+  const horasC=sum(c,'duracion_min')/60, horasN=sum(n,'duracion_min')/60, horasB=sum(b,'duracion_min')/60;
+  const horasTot=sum(ACTS,'duracion_min')/60;
+  const tlC=sum(c,'training_load'), tlN=sum(n,'training_load'), tlB=sum(b,'training_load');
+  const tlTot=tlC+tlN+tlB;
+  const calTot=sum(ACTS,'calorias');
+  return {
+    c,n,b,horasC,horasN,horasB,horasTot,tlC,tlN,tlB,tlTot,calTot,
+    fcMediaC: avg(c.filter(a=>a.fc_media),'fc_media'),
+    fcMediaB: avg(b.filter(a=>a.fc_media),'fc_media'),
+    ritmoMedioC: avg(c.filter(a=>a.ritmo_min_km),'ritmo_min_km'),
+    velMediaB: avg(b.filter(a=>a.vel_kmh),'vel_kmh'),
+    distTotC: sum(c,'distancia'), distTotN: sum(n,'distancia'), distTotB: sum(b,'distancia'),
+    ultimaFitness: ACTS.find(a=>a.fitness!=null)?.fitness ?? null,
+    ultimaFatiga: ACTS.find(a=>a.fatiga!=null)?.fatiga ?? null,
+  };
+}
+
+// Convierte distancia a km independientemente del deporte (natación viene en metros)
+function distKm(a){
+  if(a.tipo==='Natación') return (a.distancia||0)/1000;
+  return a.distancia||0;
+}
+
+// Calcula los récords personales de UN deporte concreto (Carrera, Bicicleta o Natación).
+// No mezcla unidades ni métricas entre deportes: cada uno tiene sus propios logros relevantes.
+function calcLogrosPorDeporte(tipo){
+  const acts = ACTS.filter(a=>a.tipo===tipo);
+  const logros = [];
+
+  if(tipo==='Carrera'){
+    const conDist = acts.filter(a=>a.distancia);
+    if(conDist.length){
+      const a = conDist.reduce((max,c)=>c.distancia>max.distancia?c:max);
+      logros.push({ id:'mayor_distancia', icono:'📏', titulo:'Mayor distancia',
+        valor: a.distancia.toFixed(2)+' km', detalle: a.fecha, actividad:a });
+    }
+    const conRitmo = acts.filter(a=>a.ritmo_min_km);
+    if(conRitmo.length){
+      const a = conRitmo.reduce((min,c)=>c.ritmo_min_km<min.ritmo_min_km?c:min);
+      logros.push({ id:'mejor_ritmo', icono:'⚡', titulo:'Mejor ritmo medio',
+        valor: fmtMinKm(a.ritmo_min_km)+'/km', detalle: `${a.distancia}km · ${a.fecha}`, actividad:a });
+    }
+    let mejorKm = null;
+    acts.forEach(a=>{
+      if(a.splits_km) a.splits_km.forEach((s,i)=>{
+        if(!mejorKm || s<mejorKm.split) mejorKm = { split:s, kmNum:i+1, actividad:a };
+      });
+    });
+    if(mejorKm){
+      logros.push({ id:'mejor_km', icono:'🚀', titulo:'Mejor kilómetro individual',
+        valor: fmtMinKm(mejorKm.split)+'/km', detalle: `Km ${mejorKm.kmNum} · ${mejorKm.actividad.fecha}`, actividad:mejorKm.actividad });
+    }
+    const conDesnivel = acts.filter(a=>a.desnivel);
+    if(conDesnivel.length){
+      const a = conDesnivel.reduce((max,c)=>c.desnivel>max.desnivel?c:max);
+      logros.push({ id:'mayor_desnivel', icono:'⛰️', titulo:'Mayor desnivel',
+        valor: fmtInt(a.desnivel)+' m', detalle: a.fecha, actividad:a });
+    }
+    const conFcMax = acts.filter(a=>a.fc_max);
+    if(conFcMax.length){
+      const a = conFcMax.reduce((max,c)=>c.fc_max>max.fc_max?c:max);
+      logros.push({ id:'fc_max', icono:'❤️', titulo:'FC máxima registrada',
+        valor: a.fc_max+' ppm', detalle: a.fecha, actividad:a });
+    }
+    const conTL = acts.filter(a=>a.training_load);
+    if(conTL.length){
+      const a = conTL.reduce((max,c)=>c.training_load>max.training_load?c:max);
+      logros.push({ id:'mayor_carga', icono:'🔋', titulo:'Sesión de mayor carga',
+        valor: a.training_load+' TL', detalle: a.fecha, actividad:a });
+    }
+    // FC media más baja — mejor eficiencia aeróbica (corazón más tranquilo al mismo esfuerzo)
+    const conFcMedia = acts.filter(a=>a.fc_media);
+    if(conFcMedia.length){
+      const a = conFcMedia.reduce((min,c)=>c.fc_media<min.fc_media?c:min);
+      logros.push({ id:'fc_media_baja', icono:'💚', titulo:'FC media más baja',
+        valor: a.fc_media+' ppm', detalle: `${a.distancia}km · ${a.fecha}`, actividad:a });
+    }
+    // Sesión más aeróbica: mayor % de tiempo en Z1-Z2
+    const conZonasCar = acts.filter(a=>a.fc_z1s!=null);
+    if(conZonasCar.length){
+      const pctAer = a=>{ const z1=a.fc_z1s||0,z2=a.fc_z2s||0,tot=[1,2,3,4,5,6,7].reduce((s,i)=>s+(a['fc_z'+i+'s']||0),0); return tot?((z1+z2)/tot*100):0; };
+      const a = conZonasCar.reduce((max,c)=>pctAer(c)>pctAer(max)?c:max);
+      logros.push({ id:'mas_aerobica', icono:'🫁', titulo:'Sesión más aeróbica',
+        valor: pctAer(a).toFixed(1)+'% en Z1-Z2', detalle: `${a.distancia}km · ${a.fecha}`, actividad:a });
+    }
+  }
+
+  if(tipo==='Bicicleta'){
+    const conDist = acts.filter(a=>a.distancia);
+    if(conDist.length){
+      const a = conDist.reduce((max,c)=>c.distancia>max.distancia?c:max);
+      logros.push({ id:'mayor_distancia', icono:'📏', titulo:'Mayor distancia',
+        valor: a.distancia.toFixed(1)+' km', detalle: a.fecha, actividad:a });
+    }
+    const conDuracion = acts.filter(a=>a.duracion_min);
+    if(conDuracion.length){
+      const a = conDuracion.reduce((max,c)=>c.duracion_min>max.duracion_min?c:max);
+      logros.push({ id:'sesion_larga', icono:'⏱️', titulo:'Sesión más larga',
+        valor: fmtH(a.duracion_min/60), detalle: a.fecha, actividad:a });
+    }
+    const conVel = acts.filter(a=>a.vel_kmh);
+    if(conVel.length){
+      const a = conVel.reduce((max,c)=>c.vel_kmh>max.vel_kmh?c:max);
+      logros.push({ id:'mayor_velocidad', icono:'💨', titulo:'Mayor velocidad media',
+        valor: a.vel_kmh+' km/h', detalle: a.fecha, actividad:a });
+    }
+    const conDesnivel = acts.filter(a=>a.desnivel);
+    if(conDesnivel.length){
+      const a = conDesnivel.reduce((max,c)=>c.desnivel>max.desnivel?c:max);
+      logros.push({ id:'mayor_desnivel', icono:'⛰️', titulo:'Mayor desnivel',
+        valor: fmtInt(a.desnivel)+' m', detalle: a.fecha, actividad:a });
+    }
+    const conFcMax = acts.filter(a=>a.fc_max);
+    if(conFcMax.length){
+      const a = conFcMax.reduce((max,c)=>c.fc_max>max.fc_max?c:max);
+      logros.push({ id:'fc_max', icono:'❤️', titulo:'FC máxima registrada',
+        valor: a.fc_max+' ppm', detalle: a.fecha, actividad:a });
+    }
+    const conTL = acts.filter(a=>a.training_load);
+    if(conTL.length){
+      const a = conTL.reduce((max,c)=>c.training_load>max.training_load?c:max);
+      logros.push({ id:'mayor_carga', icono:'🔋', titulo:'Sesión de mayor carga',
+        valor: a.training_load+' TL', detalle: a.fecha, actividad:a });
+    }
+    // FC media más baja — mejor base aeróbica en bici
+    const conFcMediaB = acts.filter(a=>a.fc_media);
+    if(conFcMediaB.length){
+      const a = conFcMediaB.reduce((min,c)=>c.fc_media<min.fc_media?c:min);
+      logros.push({ id:'fc_media_baja', icono:'💚', titulo:'FC media más baja',
+        valor: a.fc_media+' ppm', detalle: `${a.distancia}km · ${a.fecha}`, actividad:a });
+    }
+    // Sesión más aeróbica en bici (% tiempo Z1-Z2)
+    const conZonasBici = acts.filter(a=>a.fc_z1s!=null);
+    if(conZonasBici.length){
+      const pctAerB = a=>{ const z1=a.fc_z1s||0,z2=a.fc_z2s||0,tot=[1,2,3,4,5,6,7].reduce((s,i)=>s+(a['fc_z'+i+'s']||0),0); return tot?((z1+z2)/tot*100):0; };
+      const a = conZonasBici.reduce((max,c)=>pctAerB(c)>pctAerB(max)?c:max);
+      logros.push({ id:'mas_aerobica', icono:'🫁', titulo:'Sesión más aeróbica',
+        valor: pctAerB(a).toFixed(1)+'% en Z1-Z2', detalle: `${a.distancia}km · ${a.fecha}`, actividad:a });
+    }
+  }
+
+  if(tipo==='Natación'){
+    const conDist = acts.filter(a=>a.distancia);
+    if(conDist.length){
+      const a = conDist.reduce((max,c)=>c.distancia>max.distancia?c:max);
+      logros.push({ id:'mayor_distancia', icono:'📏', titulo:'Mayor distancia',
+        valor: fmtInt(a.distancia)+' m', detalle: a.fecha, actividad:a });
+    }
+    const conDuracion = acts.filter(a=>a.duracion_min);
+    if(conDuracion.length){
+      const a = conDuracion.reduce((max,c)=>c.duracion_min>max.duracion_min?c:max);
+      logros.push({ id:'sesion_larga', icono:'⏱️', titulo:'Sesión más larga',
+        valor: fmtH(a.duracion_min/60), detalle: a.fecha, actividad:a });
+    }
+    const conTL = acts.filter(a=>a.training_load);
+    if(conTL.length){
+      const a = conTL.reduce((max,c)=>c.training_load>max.training_load?c:max);
+      logros.push({ id:'mayor_carga', icono:'🔋', titulo:'Sesión de mayor carga',
+        valor: a.training_load+' TL', detalle: a.fecha, actividad:a });
+    }
+    const conCal = acts.filter(a=>a.calorias);
+    if(conCal.length){
+      const a = conCal.reduce((max,c)=>c.calorias>max.calorias?c:max);
+      logros.push({ id:'mayor_calorias', icono:'🔥', titulo:'Más calorías en una sesión',
+        valor: fmtInt(a.calorias)+' kcal', detalle: a.fecha, actividad:a });
+    }
+  }
+
+  return logros;
+}
+
+
+function fmtH(h){ if(h==null) return '—'; const hh=Math.floor(h), mm=Math.round((h-hh)*60); return mm>0 ? hh+'h'+mm+'m' : hh+'h'; }
+function fmtMinKm(v){ if(v==null) return '—'; const m=Math.floor(v), s=Math.round((v-m)*60); return m+':'+String(s).padStart(2,'0'); }
+function fmtInt(n){ return n==null ? '—' : Math.round(n).toLocaleString('es-ES'); }
+
+// Objetivo configurable — nombre y fecha editables desde el header
+function getObjetivo(){
+  const raw = localStorage.getItem('trainai_objetivo');
+  if(raw) try{ return JSON.parse(raw); }catch(e){}
+  return { nombre:'Don Benito', fecha:'2026-08-29' };
+}
+function setObjetivo(nombre, fecha){ localStorage.setItem('trainai_objetivo', JSON.stringify({nombre, fecha})); }
+const diasObj = ()=>{ const f=new Date(getObjetivo().fecha); return Math.round((f-new Date())/86400000); };
+const nombreObj = ()=>getObjetivo().nombre;
+
+// ─────────────────────────────────────────────
+// TABS
+// ─────────────────────────────────────────────
+const TABS = [
+  {id:'chat',  label:'💬 Entrenador'},
+  {id:'datos', label:'📊 Datos'},
+  {id:'logros',label:'🏅 Logros'},
+  {id:'plan',  label:'📅 Plan entrenamiento'},
+  {id:'hist',  label:'📋 Historial'},
+  {id:'reg',   label:'➕ Registrar'},
+];
+
+function buildNav(){
+  const nav = document.getElementById('nav');
+  nav.innerHTML = TABS.map(t=>`<button class="tab" id="nb-${t.id}">${t.label}</button>`).join('');
+  TABS.forEach(t=>{
+    document.getElementById('nb-'+t.id).addEventListener('click', ()=>showTab(t.id));
+  });
+}
+
+function showTab(id){
+  TABS.forEach(t=>{
+    document.getElementById('tab-'+t.id).classList.toggle('on', t.id===id);
+    document.getElementById('nb-'+t.id).classList.toggle('on', t.id===id);
+  });
+}
+
+// ─────────────────────────────────────────────
+// HELPERS
+// ─────────────────────────────────────────────
+const fmt = (n,d=1)=>n==null?'—':(+n).toFixed(d);
+const sum = (arr,k)=>arr.reduce((s,a)=>s+(a[k]||0),0);
+const avg = (arr,k)=>{const v=arr.filter(a=>a[k]!=null);return v.length?sum(v,k)/v.length:null};
+const col = {Carrera:'#c4694a',Natación:'#3d8a8a',Bicicleta:'#b8923a',Caminata:'#8a9a7a',Senderismo:'#8a9a7a'};
+const cls = {Carrera:'t-r',Natación:'t-s',Bicicleta:'t-b',Caminata:'t-w',Senderismo:'t-w'};
+const vcls= {Carrera:'v-r',Natación:'v-s',Bicicleta:'v-b',Caminata:'v-w',Senderismo:'v-w'};
+const ZL_FULL  = ['Z1 Suave','Z2 Base','Z3 Tempo','Z4 Umbral','Z5 VO2max','Z6 Anaeróbico','Z7 Máximo'];
+const ZC_FULL  = ['#4a6b52','#6fae6f','#a8b84a','#d4a843','#d68a3a','#c4622f','#8e2f1f'];
+
+// Calcula zonas agregadas reales (suma de segundos en cada zona) para un conjunto de actividades.
+// Detecta automáticamente si hay datos de Z6/Z7 en el conjunto para mostrar 5 o 7 zonas.
+function zonasAgregadas(actividades){
+  const campos = ['fc_z1s','fc_z2s','fc_z3s','fc_z4s','fc_z5s','fc_z6s','fc_z7s'];
+  const sumas = campos.map(c => actividades.reduce((s,a)=>s+(a[c]||0),0));
+  const nZonas = (sumas[5]>0 || sumas[6]>0) ? 7 : 5;
+  const segs = sumas.slice(0,nZonas);
+  const tot = segs.reduce((s,v)=>s+v,0) || 1;
+  const horas = segs.map(s => +(s/3600).toFixed(2));
+  const pcts = segs.map(s => +((s/tot)*100).toFixed(1));
+  return { labels: ZL_FULL.slice(0,nZonas), colors: ZC_FULL.slice(0,nZonas), horas, pcts, nZonas };
+}
+
+function stat(v,l,vc='v-c',small=false){
+  return `<div class="stat"><div class="v ${vc}" style="${small?'font-size:1.1rem':''}">${v}</div><div class="l">${l}</div></div>`;
+}
+
+function zonaBar(label,pct,color){
+  return `<div class="zbar-wrap">
+    <div class="zbar-lbl"><span>${label}</span><span style="color:${color};font-weight:600">${pct}%</span></div>
+    <div class="zbar"><div class="zbar-fill" style="width:${pct}%;background:${color}"></div></div>
+  </div>`;
+}
+
+function progBar(label,val,pct,color){
+  return `<div class="pb-wrap">
+    <div class="pb-lbl"><span>${label}</span><span style="color:${color};font-weight:700">${val}</span></div>
+    <div class="pb"><div class="pb-fill" style="width:${pct}%;background:${color}"></div></div>
+  </div>`;
+}
+
+// ─────────────────────────────────────────────
+// IA
+// ─────────────────────────────────────────────
+function buildCtx(){
+  const s=calcStats(), d=diasObj();
+  const planTexto = getPlanTexto();
+  return `Eres el entrenador personal de Juanjo, multideportista popular de Villanueva de la Serena (Extremadura). Hablas en español, eres cercano, directo y muy específico con datos reales. Nunca genérico.
+
+OBJETIVO: XXXVI Fondo Popular Don Benito · 5 km · 29 agosto 2026 (en ${d} días)
+Marca actual: 30:51 (Cross Trujillo, 21 jun 2026) · Meta: sub-28:00 · Ritmo necesario: 5:36/km · Mejora: 2:51 (~17s/km)
+
+HISTORIAL (${ACTS.length} actividades en total, oct 2025–hoy):
+- Carrera: ${s.c.length} sesiones · ${s.distTotC.toFixed(1)}km · ${fmtH(s.horasC)} · FC media ${fmtInt(s.fcMediaC)}ppm · Ritmo medio ${fmtMinKm(s.ritmoMedioC)}/km
+- Natación: ${s.n.length} sesiones · ${(s.distTotN/1000).toFixed(1)}km · ${fmtH(s.horasN)} · Sin FC (Xiaomi Watch 2 Pro no mide en agua)
+- Bicicleta: ${s.b.length} sesiones · ${s.distTotB.toFixed(0)}km · ${fmtH(s.horasB)} · FC media ${fmtInt(s.fcMediaB)}ppm · Vel media ${fmtInt(s.velMediaB)}km/h
+- Forma actual: Fitness CTL=${s.ultimaFitness??'—'} · Fatiga ATL=${s.ultimaFatiga??'—'}
+- Calorías totales: ${fmtInt(s.calTot)} · Horas totales: ${fmtH(s.horasTot)} · Carga total TL: ${fmtInt(s.tlTot)}
+
+ÚLTIMAS 8 ACTIVIDADES (las más recientes que tiene registradas, incluyendo lo que él mismo añada):
+${ACTS.slice(0,8).map(a=>`- ${a.fecha} | ${a.tipo} | ${a.tipo==='Natación'?a.distancia+'m':a.distancia+'km'} | ${a.duracion_min}min${a.ritmo_min_km?' | '+fmtMinKm(a.ritmo_min_km)+' min/km':''}${a.vel_kmh?' | '+a.vel_kmh+' km/h':''}${a.fc_media?' | FC '+a.fc_media:''}${a.training_load?' | TL '+a.training_load:''}`).join('\n')}
+
+PLAN DE ENTRENAMIENTO ACTIVO: "${getPlanActivo().nombre}" (Juanjo puede tener varios planes guardados y cambiar de plan activo; esto puede editarse desde el chat de la pestaña Plan):
+${planTexto}
+
+RELOJ: Xiaomi Watch 2 Pro. También opositor de lengua española (examen jun 2027), estudia por las mañanas, ten en cuenta su carga de estudio al proponer entrenos.`;
+}
+
+async function callIA(prompt, loadId, respId){
+  if(!getApiKey()){ mostrarModalApiKey('Necesitas una API key para usar el Entrenador IA.'); return; }
+  const load=document.getElementById(loadId), resp=document.getElementById(respId);
+  if(load) load.classList.add('on');
+  if(resp){resp.classList.remove('on');resp.textContent='';}
+  try{
+    const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',
+      headers:{'Content-Type':'application/json','x-api-key':getApiKey(),'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
+      body:JSON.stringify({model:'claude-haiku-4-5-20251001',max_tokens:1000,system:buildCtx(),
+        messages:[{role:'user',content:prompt}]})});
+    const d=await r.json();
+    const txt=d.content?.map(b=>b.text||'').join('')||'Sin respuesta';
+    if(resp){resp.textContent=txt;resp.classList.add('on');}
+    return txt;
+  }catch(e){
+    const msg='❌ Error: '+e.message;
+    if(resp){resp.textContent=msg;resp.classList.add('on');}
+  }finally{
+    if(load) load.classList.remove('on');
+  }
+}
+
+// ─────────────────────────────────────────────
+// TAB CHAT
+// ─────────────────────────────────────────────
+let chatHistory=[];
+// Calcula el TSB (Fitness-Fatiga) de las últimas N sesiones con datos, y detecta racha de fatiga sostenida
+function calcAlertaSobreentrenamiento(){
+  const conForma = ACTS.filter(a => a.fitness!=null && a.fatiga!=null)
+    .sort((a,b) => new Date(b.fecha) - new Date(a.fecha));
+  if(conForma.length < 3) return null;
+  const ultimas = conForma.slice(0, 5);
+  const tsbs = ultimas.map(a => a.fitness - a.fatiga);
+  const tsbMedio = tsbs.reduce((s,v)=>s+v,0) / tsbs.length;
+  const todasNegativasFuerte = tsbs.filter(t => t < -10).length >= 3;
+  if(tsbMedio < -12 || todasNegativasFuerte){
+    return { tsbMedio: +tsbMedio.toFixed(1), nivel: tsbMedio < -18 ? 'alta' : 'moderada' };
+  }
+  return null;
+}
+
+// Calcula el resumen de la semana natural anterior (lunes a domingo) para mostrarlo el lunes siguiente
+function calcResumenSemanal(hoyUTC){
+  const diaSemana = hoyUTC.getUTCDay(); // 0=domingo,1=lunes...
+  if(diaSemana !== 1) return null; // solo se muestra los lunes
+  const finSemanaPasada = new Date(hoyUTC); finSemanaPasada.setUTCDate(finSemanaPasada.getUTCDate()-1); // domingo anterior
+  const inicioSemanaPasada = new Date(finSemanaPasada); inicioSemanaPasada.setUTCDate(inicioSemanaPasada.getUTCDate()-6); // lunes anterior
+
+  const enRango = a => {
+    const f = new Date(a.fecha+'T00:00:00Z');
+    return f >= inicioSemanaPasada && f <= finSemanaPasada;
+  };
+  const semana = ACTS.filter(enRango);
+  if(!semana.length) return null;
+
+  const c = semana.filter(a=>a.tipo==='Carrera'), n = semana.filter(a=>a.tipo==='Natación'), b = semana.filter(a=>a.tipo==='Bicicleta');
+  return {
+    n: semana.length,
+    horas: sum(semana,'duracion_min')/60,
+    km_carrera: sum(c,'distancia'),
+    km_bici: sum(b,'distancia'),
+    m_nat: sum(n,'distancia'),
+    tl: sum(semana,'training_load'),
+    inicio: inicioSemanaPasada.toISOString().slice(0,10),
+    fin: finSemanaPasada.toISOString().slice(0,10),
+  };
+}
+
+function buildChat(){
+  const el=document.getElementById('tab-chat');
+  const ahoraLocal = new Date();
+  const hoyUTC = new Date(Date.UTC(ahoraLocal.getFullYear(), ahoraLocal.getMonth(), ahoraLocal.getDate()));
+  const hoyInfo = getEntrenoDeFecha(hoyUTC);
+  const alerta = calcAlertaSobreentrenamiento();
+  const resumenSemana = calcResumenSemanal(hoyUTC);
+  let tarjetaHoy = '';
+  if(hoyInfo){
+    const emoji = hoyInfo.esDescanso ? '🛌' : (/natación|nadar|piscina/i.test(hoyInfo.texto) ? '🏊' : /carrera|correr|series|fartlek/i.test(hoyInfo.texto) ? '🏃' : /bici/i.test(hoyInfo.texto) ? '🚴' : '⚡');
+    const estadoTxt = hoyInfo.esDescanso ? '' : (hoyInfo.hecho ? '<span style="color:var(--cy);font-weight:600">✓ Ya registrado</span>' : '<span style="color:#c4622f;font-weight:600">○ Pendiente</span>');
+    tarjetaHoy = `
+    <div class="card" style="border-color:var(--cy);margin-bottom:1rem">
+      <div class="card-t" style="color:var(--cy)">Hoy toca · ${getPlanActivo().nombre}</div>
+      <div style="display:flex;align-items:center;gap:.75rem">
+        <span style="font-size:1.6rem">${emoji}</span>
+        <div style="flex:1;font-size:.9rem">${esc(hoyInfo.texto)}</div>
+        ${estadoTxt}
+      </div>
+    </div>`;
+  }
+
+  const tarjetaResumen = resumenSemana ? `
+    <div class="card" style="border-color:var(--cy);margin-bottom:1rem">
+      <div class="card-t" style="color:var(--cy)">📋 Resumen de la semana pasada (${resumenSemana.inicio} → ${resumenSemana.fin})</div>
+      <div class="g3" style="gap:.5rem;margin-bottom:.5rem">
+        ${stat(resumenSemana.n,'Actividades')}
+        ${stat(fmtH(resumenSemana.horas),'Horas')}
+        ${stat(fmtInt(resumenSemana.tl),'Carga TL')}
+      </div>
+      <div style="font-size:.8rem;color:var(--mu)">Carrera: ${resumenSemana.km_carrera.toFixed(1)}km · Bici: ${fmtInt(resumenSemana.km_bici)}km · Natación: ${fmtInt(resumenSemana.m_nat)}m</div>
+      <button class="btn btn-s btn-sm" id="btn-resumen-ia" style="margin-top:.6rem">🤖 Pedir análisis de la semana</button>
+    </div>` : '';
+
+  const tarjetaAlerta = alerta ? `
+    <div class="card" style="border-color:#c4622f;margin-bottom:1rem">
+      <div style="display:flex;align-items:flex-start;gap:.75rem">
+        <span style="font-size:1.4rem">⚠️</span>
+        <div>
+          <div style="font-weight:700;color:#c4622f;font-size:.88rem">Fatiga ${alerta.nivel === 'alta' ? 'alta' : 'acumulada'} detectada</div>
+          <div style="font-size:.82rem;color:var(--mu);margin-top:.25rem">Tu forma (TSB) lleva varios días en torno a ${alerta.tsbMedio}. Valora si necesitas un descanso extra o bajar intensidad antes de seguir apretando.</div>
+        </div>
+      </div>
+    </div>` : '';
+
+  el.innerHTML=`
+  ${tarjetaResumen}
+  ${tarjetaAlerta}
+  ${tarjetaHoy}
+  <div class="sh"><div><div class="st">Entrenador</div><div class="ss">Conoce tus <span id="chat-n-acts"></span> actividades reales y tu plan de verano completo</div></div>
+    <button class="btn btn-s btn-sm" onclick="limpiarChat()">🗑 Limpiar</button></div>
+  <div class="card">
+    <div class="chat-box" id="chat-msgs"></div>
+    <div class="chat-row">
+      <input type="text" id="chat-in" placeholder="¿Cómo voy de cara a Don Benito? ¿Qué hago hoy?...">
+      <button class="btn btn-p" id="btn-chat-send">Enviar</button>
+    </div>
+    <div class="quick-btns" style="margin-top:.6rem">
+      <button class="btn btn-s btn-sm" onclick="pq(0)">🎯 Análisis objetivo</button>
+      <button class="btn btn-s btn-sm" onclick="pq(1)">📈 Forma actual</button>
+      <button class="btn btn-s btn-sm" onclick="pq(2)">🏃 Progresión carrera</button>
+      <button class="btn btn-s btn-sm" onclick="pq(3)">📅 ¿Qué hago hoy?</button>
+      <button class="btn btn-s btn-sm" onclick="pq(4)">🚴 Análisis bici</button>
+      <button class="btn btn-s btn-sm" onclick="pq(5)">🏊 Análisis natación</button>
+      <button class="btn btn-s btn-sm" onclick="pq(7)">🥗 Nutrición</button>
+    </div>
+  </div>`;
+  document.getElementById('btn-chat-send').addEventListener('click', enviarChat);
+  document.getElementById('chat-in').addEventListener('keydown', e=>{if(e.key==='Enter')enviarChat();});
+  const btnResumenIa = document.getElementById('btn-resumen-ia');
+  if(btnResumenIa) btnResumenIa.addEventListener('click', ()=>{
+    pq(6);
+  });
+  limpiarChat();
+}
+const QUICK=[
+  '¿Cómo voy de cara al objetivo sub-28 en Don Benito el 29 de agosto? Dame un análisis honesto con mis datos reales.',
+  '¿Cómo está mi forma ahora con el CTL, ATL y TSB? ¿Debería descansar o puedo apretar esta semana?',
+  'Analiza mi progresión en carrera: ritmos, frecuencia cardíaca, tendencia. ¿Estoy mejorando?',
+  '¿Qué entrenamiento concreto debería hacer hoy según mi plan de verano y mi estado actual?',
+  'Analiza mis 49 salidas en bici: zonas de FC, progresión, cómo contribuyen al objetivo de carrera.',
+  'Analiza mis 41 sesiones de natación: progresión de distancia, pace, carga. ¿Qué aportan al conjunto?',
+  'Analiza mi semana pasada: volumen, distribución entre deportes, carga, y cómo encaja en el plan. ¿Algo a ajustar para esta semana?',
+  'Soy un multideportista popular (carrera, bici, natación) entrenando en Extremadura con veranos muy calurosos, objetivo una 5km en agosto. Dame una lista flexible de alimentos y pautas de hidratación que me ayuden a rendir y recuperarme mejor. No quiero una dieta cerrada ni gramajes, solo orientación práctica y alimentos recomendados organizados por categorías.'
+];
+function pq(i){document.getElementById('chat-in').value=QUICK[i];enviarChat();}
+function addMsg(role,text){
+  const box=document.getElementById('chat-msgs');
+  const d=document.createElement('div');
+  d.className='msg '+(role==='user'?'msg-u':'msg-a');
+  d.textContent=text;
+  box.appendChild(d);
+  box.scrollTop=box.scrollHeight;
+}
+function limpiarChat(){
+  chatHistory=[];
+  const box=document.getElementById('chat-msgs');
+  if(box){box.innerHTML='';
+    addMsg('ai',`¡Hola Juanjo! 👋 Tengo cargado tu historial completo (${ACTS.length} actividades desde octubre) y tu plan de verano.\n\nEstamos a ${diasObj()} días de Don Benito. ¿En qué te ayudo?`);}
+}
+async function enviarChat(){
+  if(!getApiKey()){ mostrarModalApiKey('Necesitas una API key para usar el chat.'); return; }
+  const inp=document.getElementById('chat-in');
+  const btn=document.getElementById('btn-chat-send');
+  const txt=inp.value.trim();if(!txt)return;
+  inp.value='';addMsg('user',txt);
+  btn.disabled=true;btn.textContent='...';
+  chatHistory.push({role:'user',content:txt});
+  try{
+    const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',
+      headers:{'Content-Type':'application/json','x-api-key':getApiKey(),'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
+      body:JSON.stringify({model:'claude-haiku-4-5-20251001',max_tokens:1000,system:buildCtx(),messages:chatHistory})});
+    const d=await r.json();
+    const resp=d.content?.map(b=>b.text||'').join('')||'Error';
+    chatHistory.push({role:'assistant',content:resp});
+    addMsg('ai',resp);
+  }catch(e){addMsg('ai','❌ Error: '+e.message);}
+  finally{btn.disabled=false;btn.textContent='Enviar';}
+}
+
+// ─────────────────────────────────────────────
+// TAB DATOS
+// ─────────────────────────────────────────────
+let chartsInit=false;
+function buildDatos(){
+  const el=document.getElementById('tab-datos');
+  const s=calcStats(), d=diasObj();
+  const pct=(v)=>s.tlTot?Math.round(v/s.tlTot*100):0;
+  const zRun = zonasAgregadas(s.c);
+  const zBike = zonasAgregadas(s.b);
+
+  el.innerHTML=`
+  <div class="sh"><div><div class="st">Datos de entrenamiento</div><div class="ss">oct 2025 – ${new Date().toLocaleDateString('es-ES',{month:'long',year:'numeric'})} · ${ACTS.length} actividades · se actualiza con cada entreno que añadas</div></div>
+    <button class="btn btn-s btn-sm" id="btn-export-resumen">🖼️ Exportar resumen</button>
+  </div>
+
+  <!-- GLOBAL -->
+  <div class="card" style="border-color:var(--cy);margin-bottom:1.25rem">
+    <div class="card-t" style="color:var(--cy)">Resumen global</div>
+    <div class="g4">
+      ${stat(ACTS.length,'Actividades')}
+      ${stat(fmtH(s.horasTot),'Horas totales')}
+      ${stat(fmtInt(s.tlTot),'Carga total TL')}
+      ${stat(fmtInt(s.calTot),'Calorías totales')}
+    </div>
+    <div class="g4" style="margin-top:.75rem">
+      ${stat(s.c.length+' · '+fmtH(s.horasC),'Carreras · tiempo','v-r',true)}
+      ${stat(s.n.length+' · '+fmtH(s.horasN),'Nataciones · tiempo','v-s',true)}
+      ${stat(s.b.length+' · '+fmtH(s.horasB),'Salidas bici · tiempo','v-b',true)}
+      ${stat(d>0?d:'¡Ya!','Días hasta '+nombreObj(),'v-y',true)}
+    </div>
+  </div>
+
+  <!-- FORMA + OBJETIVO -->
+  <div class="g2">
+    <div class="card">
+      <div class="card-t">Forma actual (CTL / ATL / TSB)</div>
+      <div class="g3" style="gap:.7rem;margin-bottom:.9rem">
+        ${stat(s.ultimaFitness??'—','Fitness (CTL)','v-c')}
+        ${stat(s.ultimaFatiga??'—','Fatiga (ATL)','v-r')}
+        ${stat(s.ultimaFitness!=null&&s.ultimaFatiga!=null?(s.ultimaFitness-s.ultimaFatiga).toFixed(1):'—','Forma (TSB)','v-y')}
+      </div>
+      <div class="cw"><canvas id="c-forma"></canvas></div>
+      <div class="nota nota-r">El TSB (Fitness menos Fatiga) negativo indica fatiga acumulada, normal en semana de carga. El tapering previo a una carrera debe subirlo a positivo.</div>
+    </div>
+    <div class="card">
+      <div class="card-t">🎯 Objetivo: Don Benito 5km · 29 agosto 2026</div>
+      ${progBar('Marca actual — Trujillo 21 jun','30:51',65,'#c4694a')}
+      ${progBar('Mejor ritmo en entreno',fmtMinKm(Math.min(...s.c.filter(a=>a.ritmo_min_km).map(a=>a.ritmo_min_km)))+'/km',75,'var(--cy)')}
+      ${progBar('Meta sub-28:00 · 5:36/km necesario','objetivo',100,'var(--cy)')}
+      <div class="g3" style="gap:.6rem;margin-top:.9rem">
+        ${stat('2:51','Min a bajar','v-r',true)}
+        ${stat('~17s/km','Mejora necesaria','v-c',true)}
+        ${stat(d>0?Math.round(d/7):'—','Semanas restantes','v-y',true)}
+      </div>
+      <div class="card-t" style="margin-top:.9rem;margin-bottom:.5rem">Evolución ritmo carrera (min/km)</div>
+      <div class="cw" style="height:140px"><canvas id="c-ritmo-obj"></canvas></div>
+    </div>
+  </div>
+
+  <!-- DISTRIBUCIÓN -->
+  <div class="g2">
+    <div class="card">
+      <div class="card-t">Distribución de actividades</div>
+      <div class="g2" style="gap:.9rem">
+        <div>
+          <div style="font-size:.72rem;color:var(--mu);margin-bottom:.4rem;font-weight:600">Número de sesiones</div>
+          <div class="cw" style="height:155px"><canvas id="c-dist-n"></canvas></div>
+        </div>
+        <div>
+          <div style="font-size:.72rem;color:var(--mu);margin-bottom:.4rem;font-weight:600">Carga acumulada (TL)</div>
+          <div class="cw" style="height:155px"><canvas id="c-dist-tl"></canvas></div>
+        </div>
+      </div>
+      <div class="nota nota-s" style="margin-top:.6rem">La bici acumula el ${pct(s.tlB)}% de la carga total, la natación el ${pct(s.tlN)}% y la carrera el ${pct(s.tlC)}%. El plan de verano corrige el desequilibrio con más carrera de calidad en agosto.</div>
+    </div>
+    <div class="card">
+      <div class="card-t">Fitness vs Fatiga — evolución</div>
+      <div class="cw cw-t"><canvas id="c-forma2"></canvas></div>
+    </div>
+  </div>
+
+  <!-- COMPARATIVA DE PERIODOS -->
+  <div class="card">
+    <div class="card-t">Comparativa de periodos</div>
+    <div style="display:flex;gap:.6rem;align-items:center;margin-bottom:1rem;flex-wrap:wrap">
+      <span style="font-size:.78rem;color:var(--mu)">Comparar las últimas</span>
+      <select id="comp-semanas" style="width:auto;padding:.35rem .7rem;font-size:.8rem">
+        <option value="2">2 semanas</option>
+        <option value="4" selected>4 semanas</option>
+        <option value="6">6 semanas</option>
+        <option value="8">8 semanas</option>
+      </select>
+      <span style="font-size:.78rem;color:var(--mu)">contra el periodo equivalente anterior</span>
+    </div>
+    <div id="comp-resultado"></div>
+  </div>
+
+  <!-- SELECTOR -->
+  <div class="sport-btns">
+    <span style="font-size:.78rem;color:var(--mu);font-weight:600">Análisis por deporte:</span>
+    <button class="sbtn on" id="sb-carrera">🏃 Carrera</button>
+    <button class="sbtn" id="sb-bicicleta">🚴 Bicicleta</button>
+    <button class="sbtn" id="sb-natacion">🏊 Natación</button>
+  </div>
+
+  <!-- CARRERA -->
+  <div id="dep-carrera">
+    <div class="g2">
+      <div class="card" style="border-left:3px solid #c4694a">
+        <div class="card-t" style="color:#c4694a">🏃 Carrera — ${s.c.length} sesiones</div>
+        <div class="g3" style="gap:.6rem;margin-bottom:.75rem">
+          ${stat(s.distTotC.toFixed(1),'km totales','v-r')}
+          ${stat(fmtH(s.horasC),'Tiempo total','v-r')}
+          ${stat(fmtMinKm(s.ritmoMedioC),'Ritmo medio','v-r')}
+          ${stat(fmtInt(sum(s.c,'desnivel'))+'m','Desnivel total','v-r')}
+          ${stat(fmtInt(avg(s.c.filter(a=>a.training_load),'training_load')),'TL medio/sesión','v-r')}
+          ${stat(fmtInt(avg(s.c.filter(a=>a.calorias),'calorias')),'Kcal/sesión media','v-r')}
+        </div>
+        <hr class="div">
+        <div class="card-t">Frecuencia cardíaca</div>
+        <div class="g2" style="gap:.6rem;margin-bottom:.75rem">
+          ${stat(fmtInt(s.fcMediaC),'FC media (ppm)','v-r')}
+          ${stat(fmtInt(Math.max(...s.c.filter(a=>a.fc_max).map(a=>a.fc_max),0))||'—','FC máx registrada','v-r')}
+          ${stat(fmtInt(avg(s.c.filter(a=>a.fc_max),'fc_max')),'FC máx media','v-r')}
+          ${stat(s.c.filter(a=>a.fc_media).length,'Sesiones con FC','v-r')}
+        </div>
+        <div class="nota nota-r">⚠️ FC media de ~90% FCmáx indica intensidad muy alta para el volumen actual. Los rodajes suaves del plan de base son clave para construir fondo aeróbico real y bajar de 28:00 de forma sostenible.</div>
+      </div>
+      <div class="card" style="border-left:3px solid #c4694a">
+        <div class="card-t" style="color:#c4694a">Zonas de FC — Carrera (acumulado · ${s.c.filter(a=>a.fc_z1s!=null).length} sesiones con datos)</div>
+        ${zRun.labels.map((l,i)=>zonaBar(l,zRun.pcts[i],zRun.colors[i])).join('')}
+        <div class="nota nota-r"><strong style="color:#c4694a">Más de la mitad del tiempo en Z4-Z6</strong> (encima del umbral anaeróbico). Para mejorar el 5km necesitas más Z2 (rodajes suaves de verdad) y luego calidad controlada en Z4-Z5.</div>
+        <hr class="div">
+        <div class="card-t">Carga TL por sesión</div>
+        <div class="cw" style="height:120px"><canvas id="c-tl-run"></canvas></div>
+      </div>
+    </div>
+    <div class="card" style="border-left:3px solid #c4694a">
+      <div class="card-t" style="color:#c4694a">Evolución de ritmo carrera · todas las sesiones</div>
+      <div class="cw cw-t"><canvas id="c-ritmo-run"></canvas></div>
+    </div>
+  </div>
+
+  <!-- BICI -->
+  <div id="dep-bicicleta" style="display:none">
+    <div class="g2">
+      <div class="card" style="border-left:3px solid #b8923a">
+        <div class="card-t" style="color:#b8923a">🚴 Bicicleta — ${s.b.length} sesiones</div>
+        <div class="g3" style="gap:.6rem;margin-bottom:.75rem">
+          ${stat(fmtInt(s.distTotB),'km totales','v-b')}
+          ${stat(fmtH(s.horasB),'Tiempo total','v-b')}
+          ${stat(fmtInt(s.velMediaB),'km/h media','v-b')}
+          ${stat(fmtInt(sum(s.b,'desnivel'))+'m','Desnivel total','v-b')}
+          ${stat(fmtInt(avg(s.b.filter(a=>a.training_load),'training_load')),'TL medio/sesión','v-b')}
+          ${stat(fmtInt(avg(s.b.filter(a=>a.calorias),'calorias')),'Kcal/sesión media','v-b')}
+          ${stat(s.b.length?(s.distTotB/s.b.length).toFixed(1):'—','km salida media','v-b',true)}
+          ${stat(fmtInt(Math.max(...s.b.filter(a=>a.training_load).map(a=>a.training_load),0))||'—','TL máximo registrado','v-b',true)}
+          ${stat(fmtInt(avg(s.b.filter(a=>a.desnivel),'desnivel'))+'m','Desnivel medio/salida','v-b',true)}
+        </div>
+        <hr class="div">
+        <div class="card-t">Frecuencia cardíaca</div>
+        <div class="g3" style="gap:.6rem;margin-bottom:.75rem">
+          ${stat(fmtInt(s.fcMediaB),'FC media (ppm)','v-b')}
+          ${stat(fmtInt(Math.max(...s.b.filter(a=>a.fc_max).map(a=>a.fc_max),0))||'—','FC máx registrada','v-b')}
+          ${stat(fmtInt(avg(s.b.filter(a=>a.fc_max),'fc_max')),'FC máx media','v-b')}
+          ${stat(s.b.filter(a=>a.fc_media).length,'Sesiones con FC','v-b')}
+          ${stat(fmtInt(Math.min(...s.b.filter(a=>a.fc_media).map(a=>a.fc_media),999))||'—','FC media más baja','v-b',true)}
+          ${stat(fmtInt(Math.max(...s.b.filter(a=>a.fc_media).map(a=>a.fc_media),0))||'—','FC media más alta','v-b',true)}
+        </div>
+        <div class="nota nota-b">✅ FC media de bici muy equilibrada (~75-80% FCmáx). La bici está construyendo una base cardiovascular sólida que beneficia a la carrera.</div>
+      </div>
+      <div class="card" style="border-left:3px solid #b8923a">
+        <div class="card-t" style="color:#b8923a">Zonas de FC — Bicicleta (${fmtH(s.horasB)} acumuladas · ${s.b.filter(a=>a.fc_z1s!=null).length} sesiones con datos)</div>
+        ${zBike.labels.map((l,i)=>zonaBar(l,zBike.pcts[i],zBike.colors[i])).join('')}
+        <div class="nota nota-b"><strong style="color:#b8923a">Perfil polarizado:</strong> mayoría en Z1-Z2 con algo de Z4. Correcto para multideportista popular usando la bici como base.</div>
+        <hr class="div">
+        <div class="card-t">Velocidad media por sesión (km/h)</div>
+        <div class="cw" style="height:120px"><canvas id="c-vel-bike"></canvas></div>
+      </div>
+    </div>
+    <div class="g2">
+      <div class="card" style="border-left:3px solid #b8923a">
+        <div class="card-t" style="color:#b8923a">Volumen semanal (km) — últimas semanas</div>
+        <div class="cw cw-t"><canvas id="c-bici-sem"></canvas></div>
+      </div>
+      <div class="card" style="border-left:3px solid #b8923a">
+        <div class="card-t" style="color:#b8923a">Carga de entrenamiento por sesión (TL)</div>
+        <div class="cw cw-t"><canvas id="c-tl-bike"></canvas></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- NATACIÓN -->
+  <div id="dep-natacion" style="display:none">
+    <div class="g2">
+      <div class="card" style="border-left:3px solid #3d8a8a">
+        <div class="card-t" style="color:#3d8a8a">🏊 Natación — ${s.n.length} sesiones</div>
+        <div class="g3" style="gap:.6rem;margin-bottom:.75rem">
+          ${stat(fmtInt(s.distTotN)+'m','Distancia total','v-s')}
+          ${stat(fmtH(s.horasN),'Tiempo total','v-s')}
+          ${stat(fmtInt(s.n.length?s.distTotN/s.n.length:0)+'m','Media/sesión','v-s')}
+          ${stat(fmtInt(Math.max(...s.n.map(a=>a.distancia||0),0))+'m','Sesión máxima','v-s')}
+          ${stat(fmtInt(avg(s.n.filter(a=>a.training_load),'training_load')),'TL medio/sesión','v-s')}
+          ${stat(fmtInt(avg(s.n.filter(a=>a.calorias),'calorias')),'Kcal/sesión media','v-s')}
+          ${stat(fmtInt(s.tlN),'TL total natación','v-s',true)}
+          ${stat(pct(s.tlN)+'%','% carga total','v-s',true)}
+          ${stat('—','Pace medio /100m','v-s',true)}
+        </div>
+        <hr class="div">
+        <div class="card-t">Frecuencia cardíaca</div>
+        <div class="nota nota-s">
+          <strong style="color:#3d8a8a">Sin datos de FC en la mayoría de sesiones.</strong> El Xiaomi Watch 2 Pro no mide FC en agua de forma fiable.<br><br>
+          Para FC en natación necesitarías una banda de pecho Polar H10 (compatible por Bluetooth) o un Garmin específico de natación.
+        </div>
+      </div>
+      <div class="card" style="border-left:3px solid #3d8a8a">
+        <div class="card-t" style="color:#3d8a8a">Evolución de distancia por sesión</div>
+        <div class="cw cw-t"><canvas id="c-dist-swim"></canvas></div>
+      </div>
+    </div>
+    <div class="card" style="border-left:3px solid #3d8a8a">
+      <div class="card-t" style="color:#3d8a8a">Carga de entrenamiento por sesión — Natación</div>
+      <div class="cw"><canvas id="c-tl-swim"></canvas></div>
+    </div>
+  </div>`;
+
+  // Sport selector listeners
+  ['carrera','bicicleta','natacion'].forEach(spt=>{
+    document.getElementById('sb-'+spt).addEventListener('click',()=>{
+      ['carrera','bicicleta','natacion'].forEach(x=>{
+        document.getElementById('dep-'+x).style.display=x===spt?'block':'none';
+        document.getElementById('sb-'+x).classList.toggle('on',x===spt);
+      });
+      setTimeout(()=>initDatosCharts(),50);
+    });
+  });
+
+  setTimeout(()=>initDatosCharts(),100);
+
+  document.getElementById('comp-semanas').addEventListener('change', renderComparativaPeriodos);
+  renderComparativaPeriodos();
+  document.getElementById('btn-export-resumen').addEventListener('click', exportarResumenImagen);
+}
+
+function buildLogros(){
+  const el = document.getElementById('tab-logros');
+  el.innerHTML = `
+  <div class="sh"><div><div class="st">Logros</div><div class="ss">Récords personales por deporte · pulsa una tarjeta para ver la sesión completa</div></div></div>
+
+  <div class="sport-btns">
+    <button class="sbtn on" id="lb-carrera">🏃 Carrera</button>
+    <button class="sbtn" id="lb-bicicleta">🚴 Bicicleta</button>
+    <button class="sbtn" id="lb-natacion">🏊 Natación</button>
+  </div>
+
+  <div class="card">
+    <div class="card-t" id="logros-titulo">🏃 Récords — Carrera</div>
+    <div class="g3" id="logros-grid" style="gap:.75rem"></div>
+  </div>`;
+
+  ['carrera','bicicleta','natacion'].forEach(s=>{
+    document.getElementById('lb-'+s).addEventListener('click', ()=>{
+      ['carrera','bicicleta','natacion'].forEach(x=>{
+        document.getElementById('lb-'+x).classList.toggle('on', x===s);
+      });
+      renderLogrosDeporte(s);
+    });
+  });
+
+  renderLogrosDeporte('carrera');
+}
+
+const LOGROS_TIPO_MAP = { carrera:'Carrera', bicicleta:'Bicicleta', natacion:'Natación' };
+const LOGROS_EMOJI_MAP = { carrera:'🏃', bicicleta:'🚴', natacion:'🏊' };
+const LOGROS_COLOR_MAP = { carrera:'#c4694a', bicicleta:'#b8923a', natacion:'#3d8a8a' };
+
+function renderLogrosDeporte(deporteId){
+  const tipo = LOGROS_TIPO_MAP[deporteId];
+  const cont = document.getElementById('logros-grid');
+  const titulo = document.getElementById('logros-titulo');
+  if(!cont) return;
+  titulo.textContent = `${LOGROS_EMOJI_MAP[deporteId]} Récords — ${tipo}`;
+  const color = LOGROS_COLOR_MAP[deporteId];
+
+  const logros = calcLogrosPorDeporte(tipo);
+  if(!logros.length){
+    cont.innerHTML = `<div style="font-size:.82rem;color:var(--mu);grid-column:1/-1">Aún no hay suficientes datos de ${tipo.toLowerCase()} para calcular récords.</div>`;
+    return;
+  }
+  cont.innerHTML = logros.map(l => `
+    <div class="logro-card" data-logro-id="${l.id}" style="background:var(--s2);border:1px solid var(--bd);border-left:3px solid ${color};border-radius:10px;padding:.9rem;cursor:pointer;transition:border-color .15s">
+      <div style="font-size:1.4rem;margin-bottom:.4rem">${l.icono}</div>
+      <div style="font-size:.7rem;color:var(--mu);text-transform:uppercase;letter-spacing:.04em;margin-bottom:.3rem">${l.titulo}</div>
+      <div style="font-family:'Space Grotesk',sans-serif;font-size:1.2rem;font-weight:700;color:var(--cy);margin-bottom:.2rem">${l.valor}</div>
+      <div style="font-size:.72rem;color:var(--mu)">${l.detalle}</div>
+    </div>`).join('');
+
+  cont.querySelectorAll('.logro-card').forEach(card=>{
+    card.addEventListener('mouseenter', ()=>{ card.style.borderColor = 'var(--cy)'; });
+    card.addEventListener('mouseleave', ()=>{ card.style.borderColor = 'var(--bd)'; });
+    card.addEventListener('click', ()=>{
+      const id = card.dataset.logroId;
+      const logro = logros.find(l=>l.id===id);
+      if(logro){
+        window._histDatos = [logro.actividad];
+        openDetail(0);
+      }
+    });
+  });
+}
+
+
+
+function renderComparativaPeriodos(){
+  const cont = document.getElementById('comp-resultado');
+  if(!cont) return;
+  const semSel = document.getElementById('comp-semanas');
+  const nSemParsed = semSel ? parseInt(semSel.value) : NaN;
+  const nSem = Number.isFinite(nSemParsed) && nSemParsed>0 ? nSemParsed : 4;
+  const diasRango = nSem * 7;
+
+  const hoy = new Date(); hoy.setHours(23,59,59,999);
+  const inicioActual = new Date(hoy); inicioActual.setDate(inicioActual.getDate() - diasRango);
+  const inicioAnterior = new Date(inicioActual); inicioAnterior.setDate(inicioAnterior.getDate() - diasRango);
+
+  const enRango = (fechaStr, desde, hasta) => {
+    const f = new Date(fechaStr);
+    return f >= desde && f <= hasta;
+  };
+
+  const actual = ACTS.filter(a => enRango(a.fecha, inicioActual, hoy));
+  const anterior = ACTS.filter(a => enRango(a.fecha, inicioAnterior, inicioActual));
+
+  function resumenPeriodo(acts){
+    const c = acts.filter(a=>a.tipo==='Carrera'), n = acts.filter(a=>a.tipo==='Natación'), b = acts.filter(a=>a.tipo==='Bicicleta');
+    return {
+      n: acts.length,
+      horas: sum(acts,'duracion_min')/60,
+      km_carrera: sum(c,'distancia'),
+      km_bici: sum(b,'distancia'),
+      m_nat: sum(n,'distancia'),
+      tl: sum(acts,'training_load'),
+      ritmo_carrera: avg(c.filter(a=>a.ritmo_min_km),'ritmo_min_km'),
+      fc_media_carrera: avg(c.filter(a=>a.fc_media),'fc_media'),
+    };
+  }
+
+  const rActual = resumenPeriodo(actual);
+  const rAnterior = resumenPeriodo(anterior);
+
+  function filaComparativa(label, vActual, vAnterior, fmt, invertido){
+    const hay = vActual!=null && vAnterior!=null && vAnterior!==0;
+    const diff = hay ? vActual - vAnterior : null;
+    const pctDiff = hay ? (diff/Math.abs(vAnterior))*100 : null;
+    let flecha = '', color = 'var(--mu)';
+    if(pctDiff!=null && Math.abs(pctDiff)>=1){
+      const mejora = invertido ? pctDiff<0 : pctDiff>0;
+      flecha = pctDiff>0 ? '▲' : '▼';
+      color = mejora ? 'var(--cy)' : '#c4622f';
+    }
+    return `<div class="detail-row">
+      <span>${label}</span>
+      <span style="display:flex;gap:.6rem;align-items:center">
+        <span style="color:var(--mu);font-size:.78rem">${fmt(vAnterior)} → </span>
+        <span style="font-weight:700">${fmt(vActual)}</span>
+        ${pctDiff!=null && Math.abs(pctDiff)>=1 ? `<span style="color:${color};font-size:.76rem;font-weight:600">${flecha} ${Math.abs(pctDiff).toFixed(0)}%</span>` : ''}
+      </span>
+    </div>`;
+  }
+
+  const f0 = v => v==null?'—':fmtInt(v);
+  const f1 = v => v==null?'—':v.toFixed(1);
+  const fH = v => v==null?'—':fmtH(v);
+  const fPace = v => v==null?'—':fmtMinKm(v)+'/km';
+
+  cont.innerHTML = `
+    <div style="font-size:.72rem;color:var(--mu);margin-bottom:.75rem">
+      Actual: ${inicioActual.toISOString().slice(0,10)} → ${hoy.toISOString().slice(0,10)} ·
+      Anterior: ${inicioAnterior.toISOString().slice(0,10)} → ${inicioActual.toISOString().slice(0,10)}
+    </div>
+    ${filaComparativa('Actividades totales', rActual.n, rAnterior.n, f0)}
+    ${filaComparativa('Horas entrenadas', rActual.horas, rAnterior.horas, fH)}
+    ${filaComparativa('km en carrera', rActual.km_carrera, rAnterior.km_carrera, f1)}
+    ${filaComparativa('km en bicicleta', rActual.km_bici, rAnterior.km_bici, f0)}
+    ${filaComparativa('Metros en natación', rActual.m_nat, rAnterior.m_nat, f0)}
+    ${filaComparativa('Carga total (TL)', rActual.tl, rAnterior.tl, f0)}
+    ${filaComparativa('Ritmo medio carrera', rActual.ritmo_carrera, rAnterior.ritmo_carrera, fPace, true)}
+    ${filaComparativa('FC media carrera', rActual.fc_media_carrera, rAnterior.fc_media_carrera, v=>v==null?'—':Math.round(v)+'ppm', true)}
+  `;
+}
+
+function initDatosCharts(){
+  const co={responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},
+    scales:{x:{ticks:{color:'#6b8aaa',font:{size:9},maxTicksLimit:12},grid:{color:'#273d58'}},
+            y:{ticks:{color:'#6b8aaa'},grid:{color:'#273d58'}}}};
+  const coRev={...co,scales:{...co.scales,y:{...co.scales.y,reverse:true}}};
+  const makeLine=(id,labels,data,color,data2,color2,minY,maxY,rev,isPace)=>{
+    const el=document.getElementById(id);if(!el||el._ch)return;
+    const ds=[{label:'',data,borderColor:color,backgroundColor:color+'22',tension:.4,fill:true,pointBackgroundColor:color,pointRadius:4}];
+    if(data2) ds.push({label:'Meta 5:36',data:data2,borderColor:'rgba(212,168,67,.6)',borderDash:[5,5],pointRadius:0});
+    const opts={...( rev?coRev:co),plugins:{legend:{display:!!data2,labels:{color:'#6b8aaa',font:{size:10}}},
+      tooltip: isPace ? { callbacks: { label: (ctx)=>fmtMinKm(ctx.parsed.y)+' /km' } } : undefined}};
+    if(minY!=null) opts.scales={...opts.scales,y:{...opts.scales.y,min:minY,max:maxY,
+      ticks: isPace ? {...opts.scales.y.ticks, callback:(v)=>fmtMinKm(v)} : opts.scales.y.ticks}};
+    el._ch=new Chart(el.getContext('2d'),{type:'line',data:{labels,datasets:ds},options:opts});
+  };
+  const makeBar=(id,labels,data,colors,horiz)=>{
+    const el=document.getElementById(id);if(!el||el._ch)return;
+    const opts=horiz?{...co,indexAxis:'y'}:{...co};
+    el._ch=new Chart(el.getContext('2d'),{type:'bar',
+      data:{labels,datasets:[{data,backgroundColor:typeof colors==='string'?data.map(()=>colors):colors,borderRadius:3}]},
+      options:opts});
+  };
+  const makeDoughnut=(id,labels,data,bgs)=>{
+    const el=document.getElementById(id);if(!el||el._ch)return;
+    el._ch=new Chart(el.getContext('2d'),{type:'doughnut',
+      data:{labels,datasets:[{data,backgroundColor:bgs,borderColor:'transparent'}]},
+      options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{color:'#6b8aaa',font:{size:10},padding:8}}}}});
+  };
+
+  // Forma
+  const fd=ACTS.filter(a=>a.fitness).slice(0,40).reverse();
+  ['c-forma','c-forma2'].forEach(id=>{
+    const el=document.getElementById(id);if(!el||el._ch)return;
+    el._ch=new Chart(el.getContext('2d'),{type:'line',data:{labels:fd.map(a=>a.fecha.slice(5)),datasets:[
+      {label:'Fitness',data:fd.map(a=>a.fitness),borderColor:'#3d8a8a',tension:.4,fill:false,pointRadius:2},
+      {label:'Fatiga', data:fd.map(a=>a.fatiga), borderColor:'#c4694a',tension:.4,fill:false,pointRadius:2},
+    ]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#6b8aaa',font:{size:10}}}},
+      scales:{x:{ticks:{color:'#6b8aaa',font:{size:9},maxTicksLimit:10},grid:{color:'#273d58'}},y:{ticks:{color:'#6b8aaa'},grid:{color:'#273d58'}}}}});
+  });
+
+  // Donuts
+  makeDoughnut('c-dist-n',['Bici ('+bici().length+')','Nat ('+nat().length+')','Carr ('+carr().length+')'],[bici().length,nat().length,carr().length],['#b8923a','#3d8a8a','#c4694a']);
+  const tl_b=sum(bici(),'training_load'),tl_n=sum(nat(),'training_load'),tl_c=sum(carr(),'training_load');
+  makeDoughnut('c-dist-tl',['Bici 59%','Nat 35%','Carr 6%'],[tl_b,tl_n,tl_c],['#b8923a','#3d8a8a','#c4694a']);
+
+  // Ritmo carrera obj
+  const cr=ACTS.filter(a=>a.tipo==='Carrera'&&a.ritmo_min_km&&a.ritmo_min_km<8).reverse();
+  makeLine('c-ritmo-obj',cr.map(a=>a.fecha.slice(5)),cr.map(a=>a.ritmo_min_km),'#c4694a',cr.map(()=>5.60),'green',5.3,6.5,true,true);
+
+  // Ritmo carrera completo
+  makeLine('c-ritmo-run',cr.map(a=>a.fecha.slice(5)),cr.map(a=>a.ritmo_min_km),'#c4694a',cr.map(()=>5.60),'green',5.3,6.5,true,true);
+
+  // TL carrera
+  const rTL=ACTS.filter(a=>a.tipo==='Carrera'&&a.training_load).reverse();
+  makeBar('c-tl-run',rTL.map(a=>a.fecha.slice(5)),rTL.map(a=>a.training_load),'rgba(196,105,74,.8)');
+
+  // Vel bici
+  const bVel=ACTS.filter(a=>a.tipo==='Bicicleta'&&a.vel_kmh).reverse();
+  makeBar('c-vel-bike',bVel.map(a=>a.fecha.slice(5)),bVel.map(a=>a.vel_kmh),'rgba(184,146,58,.8)');
+
+  // Volumen semanal bici
+  const bM={};
+  ACTS.filter(a=>a.tipo==='Bicicleta').forEach(a=>{
+    const d=new Date(a.fecha),w=new Date(d);w.setDate(d.getDate()-d.getDay());
+    const k=w.toISOString().slice(0,10);bM[k]=(bM[k]||0)+(a.distancia||0);
+  });
+  const bK=Object.keys(bM).sort().slice(-16);
+  makeBar('c-bici-sem',bK.map(k=>k.slice(5)),bK.map(k=>+bM[k].toFixed(0)),'rgba(184,146,58,.75)');
+
+  // TL bici
+  const bTL=ACTS.filter(a=>a.tipo==='Bicicleta'&&a.training_load).slice(0,30).reverse();
+  makeBar('c-tl-bike',bTL.map(a=>a.fecha.slice(5)),bTL.map(a=>a.training_load),'rgba(184,146,58,.75)');
+
+  // Dist natación
+  const nD=ACTS.filter(a=>a.tipo==='Natación'&&a.distancia).reverse();
+  makeLine('c-dist-swim',nD.map(a=>a.fecha.slice(5)),nD.map(a=>a.distancia),'#3d8a8a',nD.map(()=>2224),null,null,null,false);
+
+  // TL natación
+  const nTL=ACTS.filter(a=>a.tipo==='Natación'&&a.training_load).reverse();
+  makeBar('c-tl-swim',nTL.map(a=>a.fecha.slice(5)),nTL.map(a=>a.training_load),'rgba(61,138,138,.75)');
+}
+
+// ─────────────────────────────────────────────
+// TAB PLAN
+// ─────────────────────────────────────────────
+const PLAN_DEFAULT_TEXT = `# Plan de verano 2026 — Juanjo
+Periodo: 22 junio – 1 septiembre 2026 · Villanueva de la Serena
+Objetivo principal: XXXVI Fondo Popular Don Benito · 5km · 29 agosto 2026 · Meta sub-28:00 (marca actual 30:51)
+
+## Fase A — Base aeróbica (22 jun – 31 jul)
+Esquema semanal: 3 natación + 2 carrera + 1 bici. Piscina de verano disponible L-V 8:00-11:30h.
+
+### Semana 1 · 22-28 jun (Bloque 1 — Base)
+- Lun: Natación 1.700m · Pull 900m (500+400m)
+- Mar: Carrera 6-7 km · 5:45-6:10/km · FC<170
+- Mié: Descanso
+- Jue: Carrera 6 km · ~5:42/km · FC~164
+- Vie: Natación 1.500-1.700m
+- Sáb: Bici larga 2.5-3h · Magacela/La Haba
+- Dom: Carrera 6-7 km · terreno llano
+
+### Semana 2 · 29 jun–5 jul (Bloque 1 — Base)
+- Lun: Natación 1.500-2.000m · crol+espalda
+- Mar: Carrera 6-7 km · 5:50-6:00/km
+- Mié: Natación 1.700-2.000m · pull 500-600m
+- Jue: Descanso
+- Vie: Natación 1.500m
+- Sáb: Carrera 6-7 km (hasta 8 si va bien)
+- Dom: Bici larga 2.5-3h · terreno variado
+
+### Semana 3 · 6-12 jul (Bloque 1 — Base)
+- Lun: Natación 1.700-2.000m
+- Mar: Carrera 6-7 km · soltar ritmo si el cuerpo lo pide
+- Mié: Natación 1.700-2.000m · pull 600-700m
+- Jue: Descanso
+- Vie: Natación 1.500m
+- Sáb: Carrera 7 km · ritmo libre
+- Dom: Bici 3h — la más larga hasta ahora
+
+### Semana 4 · 13-19 jul (Bloque 1 — Nocturna Zurbarán opcional)
+- Lun: Natación 1.500-1.700m
+- Mar: Carrera 5-6 km · ligero
+- Mié: Natación 1.500m · activación
+- Jue: Descanso pre-carrera
+- Vie: VIII Nocturna Zurbarán · 5km (si se inscribe) [DESTACADO]
+- Sáb: Natación 1.500m recuperación
+- Dom: Bici 2-2.5h · algo más suave
+
+### Semana 5 · 20-26 jul (Bloque 2 — Calidad)
+- Lun: Natación 1.700-2.000m · ritmo variado
+- Mar: Carrera 6-7 km rodaje continuo
+- Mié: Natación 2.000m · pull 800m
+- Jue: Descanso
+- Vie: Natación 1.500m
+- Sáb: FARTLEK: 2km calent. + 4x(2' fuerte/2' suave) + 1km enfr. [DESTACADO]
+- Dom: Bici larga 3h
+
+### Semana 6 · 27 jul–2 ago (Bloque 2 — Última semana Fase A)
+- Lun: Natación 1.700-2.000m
+- Mar: Carrera 6-7 km suave
+- Mié: Natación 2.000m · pull 800-1.000m
+- Jue: Descanso
+- Vie: Natación 1.500m · ÚLTIMO DÍA DEL BONO PISCINA
+- Sáb: FARTLEK: 2km + 5x(3' fuerte/2' suave) + 1km [DESTACADO]
+- Dom: Bici 3h · última salida larga antes de Punta Umbría
+
+## Viaje · 3-7 ago Punta Umbría (vacaciones, solo carrera)
+- Lun: Viaje a Punta Umbría
+- Mar: Carrera 5-6 km · paseo marítimo
+- Mié: Descanso
+- Jue: Carrera 6-7 km · progresiones: 2km + 4x(400m/200m) [DESTACADO]
+- Vie: Vuelta a Villanueva
+
+### Semana 7 · 8-11 ago (Entre viajes)
+- Sáb: Carrera 6-7 km · retomar rutina
+- Dom: Bici 2h · retomar la bici
+- Lun: Descanso
+- Mar: Carrera 6-7 km con fartlek suave
+
+## Viaje · 12-17 ago Mondragón, País Vasco (vacaciones)
+- Mié: Viaje a Mondragón
+- Jue: Carrera 5-6 km · adaptación al terreno
+- Vie: Descanso · familia
+- Sáb: Carrera 6-7 km · con el fresco notará el ritmo más fácil
+- Dom: Descanso o caminata
+- Lun: Vuelta a Villanueva
+
+## Fase B — Calidad y series (1-29 ago)
+Esquema semanal: 2 carrera + 2 bici. Sin natación sistemática.
+
+### Semana 8 · 18-23 ago (Bloque 3 — Series específicas 5km)
+- Mar: Carrera 7 km rodaje continuo · vuelta rutina
+- Mié: Bici 1.5-2h
+- Jue: Descanso
+- Vie: SERIES: 2km calent. + 6x400m (5:00-5:15/km) + 1km enfr. [DESTACADO]
+- Sáb: Descanso post-series
+- Dom: Bici 2.5-3h
+
+### Semana 9 · 24-30 ago (SEMANA DE DON BENITO)
+- Lun: Descanso · reducir carga
+- Mar: Carrera 5 km suave · activación
+- Mié: Bici 1h suave
+- Jue: Descanso total
+- Vie: 4 km muy suave + 4 progresiones de 30". Pre-carrera
+- Sáb: XXXVI FONDO POPULAR DON BENITO · 5km · ~20:00h · META SUB-28:00 [DESTACADO][CARRERA OBJETIVO]
+- Dom: Descanso post-carrera
+
+## Notas generales
+- Reloj: Xiaomi Watch 2 Pro
+- Juanjo también prepara oposiciones de Lengua y Literatura (examen junio 2027), estudia por las mañanas
+- Otras carreras del año: V Carrera del Aceite de Oliva Navalvillar de Pela (12 sept), posible debut 10K en noviembre
+- A medio plazo (posiblemente 2027): interés en debutar en duatlón/triatlón — pendiente de planificar fase específica de transiciones y combinación nado-bici-carrera
+`;
+
+// ─────────────────────────────────────────────
+// SISTEMA DE PLANES MÚLTIPLES (con nombre, cada uno independiente)
+// ─────────────────────────────────────────────
+function getPlanes(){
+  const raw = localStorage.getItem('trainai_planes');
+  if(raw){
+    try{ return JSON.parse(raw); }catch(e){}
+  }
+  // Migración: si existía el plan antiguo de una sola entrada, lo convertimos
+  const legacy = localStorage.getItem('trainai_plan');
+  const planes = [{ id:'plan-verano-2026', nombre:'Plan verano 2026 — Don Benito', texto: legacy || PLAN_DEFAULT_TEXT, chat:[] }];
+  guardarPlanes(planes);
+  return planes;
+}
+function guardarPlanes(planes){
+  localStorage.setItem('trainai_planes', JSON.stringify(planes));
+}
+function getPlanActivoId(){
+  return localStorage.getItem('trainai_plan_activo') || getPlanes()[0].id;
+}
+function setPlanActivoId(id){
+  localStorage.setItem('trainai_plan_activo', id);
+}
+function getPlanActivo(){
+  const planes = getPlanes();
+  return planes.find(p=>p.id===getPlanActivoId()) || planes[0];
+}
+function getPlanTexto(){
+  return getPlanActivo().texto;
+}
+function setPlanTexto(txt){
+  const planes = getPlanes();
+  const activo = planes.find(p=>p.id===getPlanActivoId());
+  if(activo) activo.texto = txt;
+  guardarPlanes(planes);
+}
+function crearPlan(nombre, textoBase){
+  const planes = getPlanes();
+  const id = 'plan-'+Date.now();
+  planes.push({ id, nombre, texto: textoBase || ('# '+nombre+'\nPeriodo: por definir\nObjetivo principal: por definir\n\n## Semana 1\n- Lun: Descanso'), chat:[] });
+  guardarPlanes(planes);
+  setPlanActivoId(id);
+  return id;
+}
+function borrarPlan(id){
+  let planes = getPlanes();
+  if(planes.length<=1){ alert('Debe quedar al menos un plan.'); return; }
+  planes = planes.filter(p=>p.id!==id);
+  guardarPlanes(planes);
+  if(getPlanActivoId()===id) setPlanActivoId(planes[0].id);
+}
+function renombrarPlan(id, nuevoNombre){
+  const planes = getPlanes();
+  const p = planes.find(x=>x.id===id);
+  if(p) p.nombre = nuevoNombre;
+  guardarPlanes(planes);
+}
+function getPlanChat(){
+  return getPlanActivo().chat || [];
+}
+function setPlanChat(chat){
+  const planes = getPlanes();
+  const activo = planes.find(p=>p.id===getPlanActivoId());
+  if(activo) activo.chat = chat;
+  guardarPlanes(planes);
+}
+
+// Parser simple: convierte el markdown del plan en HTML con el mismo estilo visual de antes
+const MESES_MAP = {ene:0,feb:1,mar:2,abr:3,may:4,jun:5,jul:6,ago:7,sep:8,oct:9,nov:10,dic:11};
+const DIAS_MAP = {Lun:0,Mar:1,Mié:2,Jue:3,Vie:4,Sáb:5,Dom:6};
+
+// Extrae la fecha de inicio de un encabezado de semana tipo "Semana 1 · 22-28 jun" o "3-7 ago Punta Umbría"
+// y devuelve {start: Date, mes: numero} o null si no se puede parsear
+function parseFechaSemana(headerTxt, anioRef){
+  // Cubre "22-28 jun" (mismo mes) y "29 jun–5 jul" (cruce de mes)
+  const m = headerTxt.match(/(\d{1,2})\s*(ene|feb|mar|abr|may|jun|jul|ago|sep|oct|nov|dic)?[-–]\d{1,2}\s*(ene|feb|mar|abr|may|jun|jul|ago|sep|oct|nov|dic)/i);
+  if(!m) return null;
+  const diaIni = parseInt(m[1]);
+  const mesTxt = (m[2] || m[3]).toLowerCase();
+  const mes = MESES_MAP[mesTxt];
+  if(mes==null) return null;
+  return new Date(Date.UTC(anioRef, mes, diaIni));
+}
+
+// Comprueba si existe una actividad real en ACTS para una fecha dada (cualquier deporte)
+function hayActividadEnFecha(fechaISO){
+  return ACTS.some(a => a.fecha === fechaISO);
+}
+
+// Busca en el texto del plan activo la sesión correspondiente a una fecha concreta (por defecto, hoy)
+function getEntrenoDeFecha(fechaObjetivo){
+  const texto = getPlanTexto();
+  const lines = texto.split('\n');
+  const anioRef = new Date().getFullYear();
+  const objetivoISO = fechaObjetivo.toISOString().slice(0,10);
+  let fechaSemanaActual = null;
+
+  for(const raw of lines){
+    const line = raw.trim();
+    if(!line) continue;
+    if(line.startsWith('## ') || line.startsWith('### ')){
+      const headerTxt = line.startsWith('### ') ? line.slice(4).split('(')[0].trim() : line.slice(3);
+      fechaSemanaActual = parseFechaSemana(headerTxt, anioRef);
+    } else if(line.startsWith('- ') && fechaSemanaActual){
+      const m = line.match(/^-\s*([A-Za-zÁÉÍÓÚáéíóúñÑ]+):\s*(.+)$/);
+      if(m){
+        const [,dia,txtRaw] = m;
+        if(DIAS_MAP[dia]==null) continue;
+        const fechaDia = new Date(fechaSemanaActual);
+        fechaDia.setUTCDate(fechaDia.getUTCDate() + DIAS_MAP[dia]);
+        if(fechaDia.toISOString().slice(0,10) === objetivoISO){
+          const txt = txtRaw.replace('[DESTACADO]','').replace('[CARRERA OBJETIVO]','').trim();
+          const isRest = /descanso/i.test(txt) && !/post|pre/i.test(txt.split(' ').slice(0,2).join(' '));
+          return { dia, texto: txt, esDescanso: isRest, hecho: hayActividadEnFecha(objetivoISO) };
+        }
+      }
+    }
+  }
+  return null; // la fecha no está cubierta por el plan activo
+}
+
+function exportarResumenImagen(){
+  const s = calcStats(), d = diasObj();
+  const W = 800, H = 1000;
+  const canvas = document.createElement('canvas');
+  canvas.width = W; canvas.height = H;
+  const ctx = canvas.getContext('2d');
+
+  const C = {
+    bg: '#0d1f15', card: '#15291d', card2: '#1d3526', border: '#2c4734',
+    gold: '#d4a843', text: '#e4ede6', muted: '#7fa68d',
+    run: '#c4694a', swim: '#3d8a8a', bike: '#b8923a'
+  };
+
+  function roundRect(x,y,w,h,r){
+    ctx.beginPath();
+    ctx.moveTo(x+r,y);
+    ctx.arcTo(x+w,y,x+w,y+h,r);
+    ctx.arcTo(x+w,y+h,x,y+h,r);
+    ctx.arcTo(x,y+h,x,y,r);
+    ctx.arcTo(x,y,x+w,y,r);
+    ctx.closePath();
+  }
+
+  ctx.fillStyle = C.bg;
+  ctx.fillRect(0,0,W,H);
+
+  ctx.fillStyle = C.gold;
+  ctx.font = 'bold 30px Arial';
+  ctx.fillText('Extrena — Resumen', 40, 60);
+  ctx.fillStyle = C.muted;
+  ctx.font = '15px Arial';
+  ctx.fillText(`Generado el ${new Date().toLocaleDateString('es-ES',{day:'numeric',month:'long',year:'numeric'})} · ${ACTS.length} actividades totales`, 40, 86);
+
+  let y = 130;
+
+  function tarjetaStat(x, w, label, valor, color){
+    roundRect(x, y, w, 90, 10);
+    ctx.fillStyle = C.card2;
+    ctx.fill();
+    ctx.fillStyle = color || C.gold;
+    ctx.font = 'bold 26px Arial';
+    ctx.fillText(String(valor), x+16, y+42);
+    ctx.fillStyle = C.muted;
+    ctx.font = '12px Arial';
+    ctx.fillText(label.toUpperCase(), x+16, y+68);
+  }
+
+  const colW = (W-40*2-12*3)/4;
+  tarjetaStat(40, colW, 'Actividades', ACTS.length);
+  tarjetaStat(40+colW+12, colW, 'Horas totales', fmtH(s.horasTot));
+  tarjetaStat(40+(colW+12)*2, colW, 'Carga TL', fmtInt(s.tlTot));
+  tarjetaStat(40+(colW+12)*3, colW, 'Días a Don Benito', d>0?d:'¡Ya!');
+
+  y += 120;
+
+  tarjetaStat(40, (W-80-12*2)/3, 'Carreras · tiempo', s.c.length+' · '+fmtH(s.horasC), C.run);
+  tarjetaStat(40+(W-80-12*2)/3+12, (W-80-12*2)/3, 'Natación · tiempo', s.n.length+' · '+fmtH(s.horasN), C.swim);
+  tarjetaStat(40+((W-80-12*2)/3+12)*2, (W-80-12*2)/3, 'Bici · tiempo', s.b.length+' · '+fmtH(s.horasB), C.bike);
+
+  y += 130;
+
+  roundRect(40, y, W-80, 140, 12);
+  ctx.fillStyle = C.card;
+  ctx.fill();
+  ctx.strokeStyle = C.gold;
+  ctx.lineWidth = 1.5;
+  ctx.stroke();
+  ctx.fillStyle = C.gold;
+  ctx.font = 'bold 16px Arial';
+  ctx.fillText('Objetivo: Don Benito 5km · 29 agosto 2026', 60, y+32);
+  ctx.fillStyle = C.text;
+  ctx.font = '14px Arial';
+  ctx.fillText('Marca actual: 30:51    →    Meta: sub-28:00', 60, y+62);
+  ctx.fillStyle = C.muted;
+  ctx.font = '13px Arial';
+  ctx.fillText('Mejora necesaria: 2:51 (~17 segundos por km)', 60, y+88);
+  const semanasRest = d>0 ? Math.round(d/7) : 0;
+  ctx.fillText(`Semanas restantes: ${semanasRest}`, 60, y+112);
+
+  y += 175;
+
+  if(s.ultimaFitness!=null){
+    roundRect(40, y, W-80, 90, 10);
+    ctx.fillStyle = C.card2;
+    ctx.fill();
+    ctx.fillStyle = C.muted;
+    ctx.font = '12px Arial';
+    ctx.fillText('FORMA ACTUAL', 60, y+25);
+    ctx.fillStyle = C.text;
+    ctx.font = '14px Arial';
+    const tsb = s.ultimaFatiga!=null ? (s.ultimaFitness-s.ultimaFatiga).toFixed(1) : '—';
+    ctx.fillText(`Fitness (CTL): ${s.ultimaFitness}   ·   Fatiga (ATL): ${s.ultimaFatiga??'—'}   ·   Forma (TSB): ${tsb}`, 60, y+55);
+  }
+
+  y += 110;
+  ctx.fillStyle = C.muted;
+  ctx.font = '11px Arial';
+  ctx.fillText('Generado desde Extrena', 40, H-20);
+
+  canvas.toBlob(blob=>{
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `entrenador-resumen-${new Date().toISOString().slice(0,10)}.png`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }, 'image/png');
+}
+
+function renderVistaPlan(){
+  const cont = document.getElementById('plan-render');
+  if(!cont) return;
+  if(window._vistaPlan === 'calendario'){
+    window._mesCalendario = window._mesCalendario || new Date();
+    cont.innerHTML = renderPlanCalendario(window._mesCalendario);
+    const prevBtn = document.getElementById('cal-prev'), nextBtn = document.getElementById('cal-next');
+    if(prevBtn) prevBtn.addEventListener('click', ()=>{
+      window._mesCalendario = new Date(window._mesCalendario.getFullYear(), window._mesCalendario.getMonth()-1, 1);
+      renderVistaPlan();
+    });
+    if(nextBtn) nextBtn.addEventListener('click', ()=>{
+      window._mesCalendario = new Date(window._mesCalendario.getFullYear(), window._mesCalendario.getMonth()+1, 1);
+      renderVistaPlan();
+    });
+    cont.querySelectorAll('[data-cal-day]').forEach(el=>{
+      el.addEventListener('click', ()=>{
+        const fecha = el.dataset.calDay;
+        const [y,m,d] = fecha.split('-').map(Number);
+        const info = getEntrenoDeFecha(new Date(Date.UTC(y,m-1,d)));
+        if(info) alert(fecha+'\n\n'+info.texto+(info.hecho?'\n\n✓ Ya registrado':info.esDescanso?'':'\n\n○ Pendiente'));
+      });
+    });
+  } else {
+    cont.innerHTML = renderPlanHTML(getPlanTexto());
+  }
+}
+
+// Genera una cuadrícula de calendario mensual con el entrenamiento de cada día (si el plan lo cubre)
+function renderPlanCalendario(mesRef){
+  // IMPORTANTE: todo el calendario trabaja en UTC, igual que parseFechaSemana y getEntrenoDeFecha,
+  // para que nunca haya un desfase de día por zona horaria (España va por delante de UTC).
+  const anio = mesRef.getUTCFullYear(), mes = mesRef.getUTCMonth();
+  const primerDia = new Date(Date.UTC(anio, mes, 1));
+  const ultimoDiaNum = new Date(Date.UTC(anio, mes+1, 0)).getUTCDate();
+  const nombreMes = primerDia.toLocaleDateString('es-ES', {month:'long', year:'numeric', timeZone:'UTC'});
+
+  // Offset: queremos que la semana empiece en lunes (getUTCDay() da 0=domingo)
+  let offsetInicio = primerDia.getUTCDay() - 1;
+  if(offsetInicio < 0) offsetInicio = 6;
+
+  const emoji = (txt) => {
+    if(/natación|nadar|piscina/i.test(txt)) return '🏊';
+    if(/carrera|correr|series|fartlek/i.test(txt)) return '🏃';
+    if(/bici/i.test(txt)) return '🚴';
+    return '⚡';
+  };
+
+  let celdas = '';
+  for(let i=0; i<offsetInicio; i++) celdas += '<div class="cal-celda cal-vacia"></div>';
+
+  const hoy = new Date();
+  const hoyISO = new Date(Date.UTC(hoy.getFullYear(), hoy.getMonth(), hoy.getDate())).toISOString().slice(0,10);
+  for(let d=1; d<=ultimoDiaNum; d++){
+    const fecha = new Date(Date.UTC(anio, mes, d));
+    const fechaISO = fecha.toISOString().slice(0,10);
+    const info = getEntrenoDeFecha(fecha);
+    const esHoy = fechaISO === hoyISO;
+    let contenido = '';
+    let claseCelda = 'cal-celda';
+    if(info && !info.esDescanso){
+      // El icono del deporte SIEMPRE se muestra, hecho o no — nunca desaparece.
+      // El estado (hecho/pendiente) se marca con el color de fondo de toda la celda, mucho más visible que un punto.
+      claseCelda += info.hecho ? ' cal-hecho' : ' cal-pendiente';
+      contenido = `<div style="font-size:1.05rem;line-height:1">${emoji(info.texto)}</div>`;
+    } else if(info && info.esDescanso){
+      claseCelda += ' cal-descanso';
+      contenido = `<div style="font-size:.75rem;color:var(--mu);font-weight:600">—</div>`;
+    }
+    celdas += `<div class="${claseCelda}${esHoy?' cal-hoy':''}" data-cal-day="${fechaISO}" style="cursor:${info?'pointer':'default'}">
+      <div class="cal-num">${d}</div>
+      ${contenido}
+    </div>`;
+  }
+
+  const diasSemana = ['L','M','X','J','V','S','D'];
+
+  return `
+  <div class="card">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem">
+      <button class="btn btn-s btn-sm" id="cal-prev">‹</button>
+      <div class="card-t" style="margin:0;text-transform:capitalize">${nombreMes}</div>
+      <button class="btn btn-s btn-sm" id="cal-next">›</button>
+    </div>
+    <div class="cal-grid cal-grid-header">
+      ${diasSemana.map(d=>`<div class="cal-celda cal-dow">${d}</div>`).join('')}
+    </div>
+    <div class="cal-grid">${celdas}</div>
+    <div style="display:flex;gap:1rem;margin-top:.9rem;font-size:.72rem;color:var(--mu);flex-wrap:wrap;align-items:center">
+      <span style="display:flex;align-items:center;gap:.35rem"><span style="display:inline-block;width:14px;height:14px;border-radius:4px;background:rgba(212,168,67,.22);border:1px solid rgba(212,168,67,.45)"></span>Ya registrado</span>
+      <span style="display:flex;align-items:center;gap:.35rem"><span style="display:inline-block;width:14px;height:14px;border-radius:4px;background:var(--s2);border:1px solid var(--bd)"></span>Pendiente</span>
+      <span style="display:flex;align-items:center;gap:.35rem"><span style="display:inline-block;width:14px;height:14px;border-radius:4px;background:rgba(58,92,70,.35)"></span>Descanso</span>
+    </div>
+  </div>`;
+}
+
+function renderPlanHTML(texto){
+  const lines = texto.split('\n');
+  let html = '';
+  let inWeek = false;
+  let fechaSemanaActual = null; // Date del Lunes/inicio de la semana en curso
+  const anioRef = new Date().getFullYear();
+
+  lines.forEach(line=>{
+    line = line.trim();
+    if(!line) return;
+    if(line.startsWith('# ')) {
+      html += `<div class="card-t" style="font-size:.95rem;color:var(--cy);margin-bottom:.5rem">${esc(line.slice(2))}</div>`;
+    } else if(line.startsWith('## ')) {
+      if(inWeek) html += '</div>';
+      const headerTxt = line.slice(3);
+      fechaSemanaActual = parseFechaSemana(headerTxt, anioRef);
+      html += `<div class="plan-sem"><div class="plan-hdr"><div class="plan-hdr-t">${esc(headerTxt)}</div></div>`;
+      inWeek = true;
+    } else if(line.startsWith('### ')) {
+      if(inWeek) html += '</div>';
+      const txt = line.slice(4);
+      const parts = txt.split('(');
+      const sem = parts[0].trim();
+      const bl = parts[1] ? parts[1].replace(')','').trim() : '';
+      fechaSemanaActual = parseFechaSemana(sem, anioRef);
+      html += `<div class="plan-sem"><div class="plan-hdr"><div class="plan-hdr-t">${esc(sem)}</div><div class="plan-hdr-b">${esc(bl)}</div></div>`;
+      inWeek = true;
+    } else if(line.startsWith('- ')) {
+      const m = line.match(/^-\s*([A-Za-zÁÉÍÓÚáéíóúñÑ]+):\s*(.+)$/);
+      if(m){
+        let [,dia,txt] = m;
+        const isRest = /descanso/i.test(txt) && !/post|pre/i.test(txt.split(' ').slice(0,2).join(' '));
+        const isSpecial = txt.includes('[DESTACADO]');
+        txt = txt.replace('[DESTACADO]','').replace('[CARRERA OBJETIVO]','').trim();
+        let emoji='⚡';
+        if(/natación|nadar|piscina/i.test(txt)) emoji='🏊';
+        else if(/carrera|correr|series|fartlek/i.test(txt)) emoji='🏃';
+        else if(/bici|ciclismo/i.test(txt)) emoji='🚴';
+        else if(/descanso/i.test(txt)) emoji='—';
+        else if(/viaje/i.test(txt)) emoji='✈️';
+        else if(/vuelta/i.test(txt)) emoji='🏠';
+        else if(/FONDO POPULAR|carrera objetivo/i.test(line)) emoji='🏆';
+
+        // Calcular fecha real de este día y comprobar si hay actividad registrada
+        let checkHtml = '';
+        if(fechaSemanaActual && DIAS_MAP[dia]!=null && !isRest){
+          const offset = DIAS_MAP[dia];
+          const fechaDia = new Date(fechaSemanaActual);
+          fechaDia.setUTCDate(fechaDia.getUTCDate() + offset);
+          const fechaISO = fechaDia.toISOString().slice(0,10);
+          const hecho = hayActividadEnFecha(fechaISO);
+          checkHtml = hecho
+            ? `<span style="color:var(--cy);margin-left:.5rem;font-weight:700" title="Entrenamiento registrado el ${fechaISO}">✓</span>`
+            : `<span style="color:var(--bd);margin-left:.5rem" title="Sin registrar todavía">○</span>`;
+        }
+
+        html += `<div class="plan-dia"><div class="plan-dn">${esc(dia)}</div><div class="plan-dc ${isRest?'plan-rest':''}"><span style="margin-right:.4rem">${emoji}</span><span class="${isSpecial?'plan-sp':''}">${esc(txt)}</span>${checkHtml}</div></div>`;
+      }
+    } else if(line.startsWith('Periodo:') || line.startsWith('Objetivo principal:') || line.startsWith('Esquema semanal:')) {
+      if(inWeek){ html+='</div>'; inWeek=false; }
+      html += `<div style="font-size:.82rem;color:var(--mu);margin-bottom:.5rem">${esc(line)}</div>`;
+    } else if(line.startsWith('Reloj:') || line.startsWith('Juanjo') || line.startsWith('Otras carreras') || line.startsWith('A medio plazo')) {
+      if(inWeek){ html+='</div>'; inWeek=false; }
+      html += `<div style="font-size:.78rem;color:var(--mu);margin-bottom:.4rem;padding-left:.5rem;border-left:2px solid var(--bd)">${esc(line)}</div>`;
+    }
+  });
+  if(inWeek) html += '</div>';
+  return html;
+}
+
+
+function esc(s){ const d=document.createElement('div'); d.textContent=s; return d.innerHTML; }
+
+// Calcula cuántos días con entrenamiento previsto (hasta hoy) tienen actividad registrada
+function renderProgresoPlan(){
+  const cont = document.getElementById('plan-progress-inner');
+  if(!cont) return;
+  const texto = getPlanTexto();
+  const lines = texto.split('\n');
+  const anioRef = new Date().getFullYear();
+  // hoyUTC: medianoche UTC del día de HOY en hora local — evita el desfase de zona horaria
+  // (España va por delante de UTC, así que comparar contra "hoy local 00:00" excluía el propio día).
+  const ahoraLocal = new Date();
+  const hoyUTC = new Date(Date.UTC(ahoraLocal.getFullYear(), ahoraLocal.getMonth(), ahoraLocal.getDate()));
+  let fechaSemanaActual = null;
+
+  // Recopilamos TODOS los días previstos (no descanso) hasta hoy, en orden cronológico,
+  // con su estado. Esto alimenta tanto el progreso global como el cálculo de racha.
+  const diasPrevistos = [];
+  lines.forEach(line=>{
+    line = line.trim();
+    if(line.startsWith('## ') || line.startsWith('### ')){
+      const headerTxt = line.startsWith('### ') ? line.slice(4).split('(')[0].trim() : line.slice(3);
+      fechaSemanaActual = parseFechaSemana(headerTxt, anioRef);
+    } else if(line.startsWith('- ') && fechaSemanaActual){
+      const m = line.match(/^-\s*([A-Za-zÁÉÍÓÚáéíóúñÑ]+):\s*(.+)$/);
+      if(m){
+        const [,dia,txt] = m;
+        const isRest = /descanso/i.test(txt) && !/post|pre/i.test(txt.split(' ').slice(0,2).join(' '));
+        if(isRest || DIAS_MAP[dia]==null) return;
+        const fechaDia = new Date(fechaSemanaActual);
+        fechaDia.setUTCDate(fechaDia.getUTCDate() + DIAS_MAP[dia]);
+        if(fechaDia > hoyUTC) return; // solo contamos días ya pasados o de hoy
+        const fechaISO = fechaDia.toISOString().slice(0,10);
+        diasPrevistos.push({ fecha: fechaISO, hecho: hayActividadEnFecha(fechaISO) });
+      }
+    }
+  });
+
+  const total = diasPrevistos.length;
+  const hechos = diasPrevistos.filter(d=>d.hecho).length;
+  const pct = total ? Math.round(hechos/total*100) : 0;
+
+  // Racha actual: recorremos desde el día previsto más reciente hacia atrás,
+  // contando mientras estén hechos. Se corta en el primer día previsto sin registrar.
+  let racha = 0;
+  for(let i = diasPrevistos.length - 1; i >= 0; i--){
+    if(diasPrevistos[i].hecho) racha++;
+    else break;
+  }
+
+  cont.innerHTML = `
+    <div style="display:flex;align-items:center;gap:1rem;margin-bottom:.5rem">
+      <div style="font-family:'Space Grotesk',sans-serif;font-size:1.4rem;font-weight:700;color:var(--cy)">${hechos}/${total}</div>
+      <div style="flex:1">
+        <div class="pb"><div class="pb-fill" style="width:${pct}%;background:var(--cy)"></div></div>
+      </div>
+      <div style="font-size:.85rem;color:var(--mu);font-weight:600">${pct}%</div>
+      ${racha>=2 ? `<div style="display:flex;align-items:center;gap:.3rem;background:rgba(212,168,67,.18);border:1px solid rgba(212,168,67,.4);border-radius:20px;padding:.25rem .7rem;white-space:nowrap"><span>🔥</span><span style="font-size:.8rem;font-weight:700;color:var(--cy)">${racha}</span></div>` : ''}
+    </div>
+    <div style="font-size:.78rem;color:var(--mu)">Sesiones previstas hasta hoy que ya tienes registradas con datos reales.${racha>=2?` Llevas ${racha} sesiones seguidas sin fallar.`:''}</div>
+  `;
+}
+
+let planChatHistory=[];
+
+function buildPlan(){
+  const el=document.getElementById('tab-plan');
+  const planes = getPlanes();
+  const activoId = getPlanActivoId();
+  planChatHistory = getPlanChat();
+
+  el.innerHTML=`
+  <div class="sh"><div><div class="st">Planes de entrenamiento</div><div class="ss">Crea, nombra y edita varios planes por chat con la IA · cada uno se guarda por separado</div></div></div>
+
+  <div class="card">
+    <div class="card-t">Plan activo</div>
+    <div style="display:flex;gap:.6rem;flex-wrap:wrap;align-items:center;margin-bottom:.9rem">
+      <select id="plan-selector" style="flex:1;min-width:200px">
+        ${planes.map(p=>`<option value="${p.id}" ${p.id===activoId?'selected':''}>${esc(p.nombre)}</option>`).join('')}
+      </select>
+      <button class="btn btn-s btn-sm" id="btn-plan-new">+ Nuevo plan</button>
+      <button class="btn btn-s btn-sm" id="btn-plan-rename">✏️ Renombrar</button>
+      <button class="btn btn-d btn-sm" id="btn-plan-delete">🗑 Borrar</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-t">✏️ Editar este plan con la IA</div>
+    <p style="font-size:.8rem;color:var(--mu);margin-bottom:.9rem">Pídele cambios: "quita la semana de Mondragón", "crea desde cero un plan de transición a duatlón para 2027", "sube el volumen de bici en agosto"... La IA reescribe el plan completo del plan activo y se guarda automáticamente.</p>
+    <div class="chat-box" id="plan-chat-msgs" style="min-height:160px;max-height:280px"></div>
+    <div class="chat-row">
+      <input type="text" id="plan-chat-in" placeholder="Ej: añade una semana extra de descanso activo antes de Don Benito">
+      <button class="btn btn-p" id="btn-plan-send">Enviar</button>
+    </div>
+    <div style="margin-top:.6rem">
+      <button class="btn btn-s btn-sm" id="btn-plan-nutricion">🥗 Nutrición para este plan</button>
+    </div>
+    <div class="spin-wrap" id="spin-plan"><div class="spin"></div>Reescribiendo el plan...</div>
+  </div>
+
+  <div class="card" id="plan-progress-card">
+    <div class="card-t">Progreso de cumplimiento</div>
+    <div id="plan-progress-inner"></div>
+    <div style="display:flex;gap:1rem;margin-top:.6rem;font-size:.75rem;color:var(--mu)">
+      <span><span style="color:var(--cy);font-weight:700">✓</span> Entrenamiento registrado ese día</span>
+      <span><span style="color:var(--bd)">○</span> Todavía sin registrar</span>
+    </div>
+  </div>
+
+  <div style="display:flex;gap:.5rem;margin-bottom:1rem">
+    <button class="sbtn on" id="vista-lista-btn">📋 Lista</button>
+    <button class="sbtn" id="vista-calendario-btn">📅 Calendario</button>
+  </div>
+
+  <div id="plan-render"></div>`;
+
+  window._vistaPlan = window._vistaPlan || 'lista';
+  renderVistaPlan();
+  renderProgresoPlan();
+
+  document.getElementById('vista-lista-btn').addEventListener('click', ()=>{
+    window._vistaPlan = 'lista';
+    document.getElementById('vista-lista-btn').classList.add('on');
+    document.getElementById('vista-calendario-btn').classList.remove('on');
+    renderVistaPlan();
+  });
+  document.getElementById('vista-calendario-btn').addEventListener('click', ()=>{
+    window._vistaPlan = 'calendario';
+    document.getElementById('vista-calendario-btn').classList.add('on');
+    document.getElementById('vista-lista-btn').classList.remove('on');
+    renderVistaPlan();
+  });
+
+  document.getElementById('plan-selector').addEventListener('change', e=>{
+    setPlanActivoId(e.target.value);
+    buildPlan();
+  });
+  document.getElementById('btn-plan-new').addEventListener('click', ()=>{
+    const nombre = prompt('Nombre del nuevo plan (ej: Plan Duatlón 2027):');
+    if(nombre && nombre.trim()){
+      crearPlan(nombre.trim());
+      buildPlan();
+    }
+  });
+  document.getElementById('btn-plan-rename').addEventListener('click', ()=>{
+    const actual = getPlanActivo();
+    const nuevo = prompt('Nuevo nombre para "'+actual.nombre+'":', actual.nombre);
+    if(nuevo && nuevo.trim()){
+      renombrarPlan(actual.id, nuevo.trim());
+      buildPlan();
+    }
+  });
+  document.getElementById('btn-plan-delete').addEventListener('click', ()=>{
+    const actual = getPlanActivo();
+    if(confirm('¿Borrar el plan "'+actual.nombre+'"? Esta acción no se puede deshacer.')){
+      borrarPlan(actual.id);
+      buildPlan();
+    }
+  });
+  document.getElementById('btn-plan-send').addEventListener('click', enviarPlanChat);
+  document.getElementById('plan-chat-in').addEventListener('keydown', e=>{if(e.key==='Enter')enviarPlanChat();});
+  document.getElementById('btn-plan-nutricion').addEventListener('click', ()=>{
+    if(!getApiKey()){ mostrarModalApiKey('Necesitas una API key para usar el chat.'); return; }
+    const plan = getPlanActivo();
+    const inp = document.getElementById('plan-chat-in');
+    inp.value = 'Basándote en este plan de entrenamiento ('+plan.nombre+'), dame una lista flexible de alimentos y pautas de hidratación que me ayuden a rendir y recuperarme en cada fase. Tengo en cuenta que entreno en Extremadura con calor intenso en verano. No quiero dieta estricta ni gramajes, solo orientación práctica por categorías de alimentos.';
+    enviarPlanChat();
+  });
+
+  const box=document.getElementById('plan-chat-msgs');
+  if(planChatHistory.length===0){
+    addPlanMsg('ai','Puedo modificar este plan. Dime qué cambios quieres: ajustar semanas, añadir objetivos nuevos, cambiar volúmenes, mover viajes... O crea un plan nuevo desde el botón de arriba si quieres planificar algo distinto, como un futuro duatlón, sin tocar este.');
+  } else {
+    planChatHistory.forEach(m=>addPlanMsg(m.role==='user'?'user':'ai', m.displayText||m.content));
+  }
+}
+
+function addPlanMsg(role,text){
+  const box=document.getElementById('plan-chat-msgs');
+  if(!box) return;
+  const d=document.createElement('div');
+  d.className='msg '+(role==='user'?'msg-u':'msg-a');
+  d.textContent=text;
+  box.appendChild(d);
+  box.scrollTop=box.scrollHeight;
+}
+
+async function enviarPlanChat(){
+  const inp=document.getElementById('plan-chat-in');
+  const btn=document.getElementById('btn-plan-send');
+  const txt=inp.value.trim(); if(!txt) return;
+  inp.value=''; addPlanMsg('user',txt);
+  btn.disabled=true; btn.textContent='...';
+  document.getElementById('spin-plan').classList.add('on');
+
+  const sysPrompt = `Eres un asistente que edita un plan de entrenamiento de triatlon/running en formato markdown plano. Reglas estrictas:
+1. Te paso el plan ACTUAL completo del plan que esta editando Juanjo, y una peticion de cambio.
+2. Debes devolver el plan COMPLETO reescrito con el cambio aplicado, en el MISMO formato markdown (# titulo, ## o ### para semanas con fechas, - Dia: descripcion).
+3. Marca sesiones importantes (series, carreras objetivo, fartlek clave) anadiendo [DESTACADO] al final de la linea. La carrera objetivo principal lleva ademas [CARRERA OBJETIVO].
+4. Manten todo lo que no se pida cambiar exactamente igual.
+5. Responde UNICAMENTE con el plan markdown completo, sin explicaciones antes ni despues, y sin envolverlo en bloques de codigo de ningun tipo.
+6. Si la peticion es ambigua, usa tu mejor criterio de entrenador y aplicala de forma razonable.
+7. Si Juanjo pide crear un plan totalmente nuevo (ej. para un futuro duatlon), puedes reescribir el plan desde cero respetando solo el titulo del plan activo.
+
+Contexto de Juanjo: multideportista popular de Villanueva de la Serena, tambien opositor de lengua y literatura. Interes futuro en debutar en duatlon/triatlon.
+
+PLAN ACTUAL (plan activo: "${getPlanActivo().nombre}"):
+${getPlanTexto()}`;
+
+  try{
+    const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',
+      headers:{'Content-Type':'application/json','x-api-key':getApiKey(),'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
+      body:JSON.stringify({model:'claude-haiku-4-5-20251001',max_tokens:4000,system:sysPrompt,
+        messages:[{role:'user',content:'Peticion de cambio: '+txt}]})});
+    const d=await r.json();
+    const nuevoTexto=(d.content?.map(b=>b.text||'').join('')||'').trim();
+    if(nuevoTexto.length>100){
+      setPlanTexto(nuevoTexto);
+      planChatHistory.push({role:'user',content:txt,displayText:txt});
+      planChatHistory.push({role:'assistant',content:'Plan actualizado.',displayText:'✅ Plan actualizado. Revisa los cambios abajo.'});
+      setPlanChat(planChatHistory);
+      addPlanMsg('ai','✅ Plan actualizado. Revisa los cambios abajo.');
+      document.getElementById('plan-render').innerHTML = renderPlanHTML(getPlanTexto());
+      renderProgresoPlan();
+    } else {
+      addPlanMsg('ai','❌ No pude generar un plan valido, prueba a reformular la peticion.');
+    }
+  }catch(e){
+    addPlanMsg('ai','❌ Error: '+e.message);
+  }finally{
+    btn.disabled=false; btn.textContent='Enviar';
+    document.getElementById('spin-plan').classList.remove('on');
+  }
+}
+
+
+// ─────────────────────────────────────────────
+// TAB HISTORIAL
+// ─────────────────────────────────────────────
+function buildHist(){
+  renderHist();
+}
+function renderHist(){
+  const el=document.getElementById('tab-hist');
+  const filtro=window._histFiltro||'';
+  const datos=filtro?ACTS.filter(a=>a.tipo===filtro):ACTS;
+  el.innerHTML=`
+  <div class="sh">
+    <div><div class="st">Historial</div><div class="ss">${datos.length} actividades${filtro?' · filtro: '+filtro:''} · pulsa una fila para ver el detalle completo</div></div>
+    <div style="display:flex;gap:.5rem;align-items:center">
+      <select id="filtro-hist" style="width:auto;padding:.38rem .7rem;font-size:.8rem">
+        <option value="">Todos</option>
+        <option${filtro==='Carrera'?' selected':''}>Carrera</option>
+        <option${filtro==='Natación'?' selected':''}>Natación</option>
+        <option${filtro==='Bicicleta'?' selected':''}>Bicicleta</option>
+        <option${filtro==='Caminata'?' selected':''}>Caminata</option>
+        <option${filtro==='Senderismo'?' selected':''}>Senderismo</option>
+      </select>
+    </div>
+  </div>
+  <div class="card" style="overflow:auto">
+    <table class="tbl">
+      <thead><tr>
+        <th>Deporte</th><th>Fecha</th><th>Nombre</th>
+        <th>Distancia</th><th>Duración</th><th>Ritmo/Vel</th>
+        <th>FC media</th><th>TL</th>
+      </tr></thead>
+      <tbody id="hist-tbody"></tbody>
+    </table>
+  </div>`;
+  document.getElementById('filtro-hist').addEventListener('change',e=>{window._histFiltro=e.target.value;renderHist();});
+  window._histDatos=datos;
+
+  const tbody=document.getElementById('hist-tbody');
+  datos.forEach((a,i)=>{
+    const tr=document.createElement('tr');
+    tr.className='tr-click';
+    tr.innerHTML=`
+      <td><span class="dot" style="background:${col[a.tipo]||'#3a5070'}"></span><span class="tag ${cls[a.tipo]||''}">${a.tipo}</span></td>
+      <td style="color:var(--mu);font-size:.76rem">${a.fecha}</td>
+      <td style="font-size:.8rem;max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${a.race?'🏆 ':''}${a.nombre}</td>
+      <td>${a.tipo==='Natación'?(a.distancia||'—')+'m':(a.distancia||'—')+'km'}</td>
+      <td>${a.duracion_min?a.duracion_min+'min':'—'}</td>
+      <td style="font-size:.78rem">${a.ritmo_min_km?fmtMinKm(a.ritmo_min_km)+' min/km':a.vel_kmh?fmtInt(a.vel_kmh)+' km/h':'—'}</td>
+      <td>${a.fc_media?a.fc_media+' ppm':'—'}</td>
+      <td>${a.training_load||'—'}</td>`;
+    tr.addEventListener('click',()=>openDetail(i));
+    tbody.appendChild(tr);
+  });
+}
+
+function openDetail(i){
+  const a=window._histDatos[i];
+  const overlay=document.getElementById('detail-overlay');
+  const content=document.getElementById('detail-content');
+  const emoji={Carrera:'🏃',Natación:'🏊',Bicicleta:'🚴',Caminata:'🚶',Senderismo:'🥾'}[a.tipo]||'⚡';
+  const c=col[a.tipo]||'#8a9a7a';
+
+  // Construir filas dinámicamente con TODOS los campos disponibles en esta actividad,
+  // así nunca se omite nada que el dato traiga, sea cual sea su origen (Strava, Intervals, FIT manual)
+  const rows=[];
+  rows.push(['Fecha', a.fecha]);
+  rows.push(['Tipo', a.tipo]);
+  rows.push(['Distancia', a.tipo==='Natación' ? (a.distancia??'—')+' m' : (a.distancia??'—')+' km']);
+  rows.push(['Duración', a.duracion_min!=null ? a.duracion_min+' min' : '—']);
+  if(a.ritmo_min_km!=null) rows.push(['Ritmo medio', fmtMinKm(a.ritmo_min_km)+' /km']);
+  if(a.vel_kmh!=null) rows.push(['Velocidad media', fmtInt(a.vel_kmh)+' km/h']);
+  rows.push(['FC media', a.fc_media!=null ? a.fc_media+' ppm' : 'sin datos']);
+  if(a.fc_min!=null) rows.push(['FC mínima', a.fc_min+' ppm']);
+  rows.push(['FC máxima', a.fc_max!=null ? a.fc_max+' ppm' : 'sin datos']);
+  rows.push(['Desnivel', a.desnivel!=null ? fmtInt(a.desnivel)+' m' : '—']);
+  rows.push(['Calorías', a.calorias!=null ? a.calorias+' kcal' : '—']);
+  rows.push(['Carga (Training Load)', a.training_load!=null ? a.training_load+(a.zonas_estimadas?' (estimada)':'') : 'no calculada']);
+  rows.push(['Intensidad', a.intensidad!=null ? a.intensidad+'%' : 'no calculada']);
+  if(a.zona_dominante!=null) rows.push(['Zona dominante', 'Z'+a.zona_dominante]);
+  if(a.fitness!=null) rows.push(['Fitness (CTL) tras sesión', a.fitness]);
+  if(a.fatiga!=null) rows.push(['Fatiga (ATL) tras sesión', a.fatiga]);
+  if(a.race) rows.push(['Competición', 'Sí']);
+  if(a.notas) rows.push(['Notas', a.notas]);
+
+  let zonasHtml='';
+  if(a.fc_z1s!=null){
+    // Zonas dinámicas: 5 si solo hay hasta Z5 (estimadas), hasta 7 si vienen de Intervals.icu (Z6/Z7 incluidas)
+    const zlblFull=['Z1 Suave','Z2 Base','Z3 Tempo','Z4 Umbral','Z5 VO2max','Z6 Anaeróbico','Z7 Máximo'];
+    const zcolFull=['#4a6b52','#6fae6f','#a8b84a','#d4a843','#d68a3a','#c4622f','#8e2f1f'];
+    const zsFull=[a.fc_z1s,a.fc_z2s,a.fc_z3s,a.fc_z4s,a.fc_z5s,a.fc_z6s,a.fc_z7s];
+    const nZonas = (a.fc_z6s!=null || a.fc_z7s!=null) ? 7 : 5;
+    const zs = zsFull.slice(0,nZonas).map(v=>v||0);
+    const zlbl = zlblFull.slice(0,nZonas);
+    const zcol = zcolFull.slice(0,nZonas);
+    const tot=zs.reduce((s,v)=>s+v,0)||1;
+    const tituloZonas = a.zonas_estimadas
+      ? 'Zonas de frecuencia cardíaca <span style="color:var(--mu);font-weight:400;font-size:.7rem">(estimadas con LTHR 172, no son las de Intervals.icu)</span>'
+      : 'Zonas de frecuencia cardíaca';
+    zonasHtml=`<div class="card-t" style="margin-top:1rem">${tituloZonas}</div>`+
+      zlbl.map((l,idx)=>{
+        const min=(zs[idx]/60).toFixed(1);
+        const pct=((zs[idx]/tot)*100).toFixed(0);
+        return zonaBar(l+' ('+min+' min)', pct, zcol[idx]);
+      }).join('');
+  }
+
+  let splitsHtml='';
+  if(a.splits_km && a.splits_km.length){
+    splitsHtml=`<div class="card-t" style="margin-top:1rem">Ritmo por kilómetro</div>
+      <div style="display:flex;gap:.4rem;flex-wrap:wrap;margin-top:.5rem">`+
+      a.splits_km.map((v,idx)=>`<div class="stat" style="flex:1;min-width:60px;padding:.6rem .4rem">
+          <div class="v" style="font-size:1rem;color:${c}">${fmtMinKm(v)}</div>
+          <div class="l">Km ${idx+1}</div>
+        </div>`).join('')+
+      `</div>`;
+  }
+
+  content.innerHTML=`
+    <div class="detail-hdr">
+      <div>
+        <div class="detail-title">${emoji} ${a.nombre}${a.race?' 🏆':''}</div>
+        <div class="detail-sub">${a.fecha} · ${a.tipo}</div>
+      </div>
+      <button class="detail-close" id="detail-close-btn">✕</button>
+    </div>
+    <div>${rows.map(([l,v])=>`<div class="detail-row"><span>${l}</span><span style="color:${c}">${v}</span></div>`).join('')}</div>
+    ${splitsHtml}
+    ${zonasHtml}
+    <div class="card-t" style="margin-top:1rem">Sensaciones / notas</div>
+    <textarea id="detail-notas" rows="3" placeholder="¿Cómo te sentiste? Piernas, calor, ánimo...">${esc(getNotaExtra(a))}</textarea>
+    <button class="btn btn-s btn-sm" id="detail-guardar-nota" style="margin-top:.5rem">💾 Guardar nota</button>
+    <div style="display:flex;gap:.6rem;margin-top:1.25rem">
+      <button class="btn btn-p btn-sm" id="detail-analyze-btn">🤖 Analizar con IA</button>
+    </div>
+    <div class="spin-wrap" id="spin-detail"><div class="spin"></div>Analizando...</div>
+    <div class="ai-box" id="resp-detail"></div>
+  `;
+
+  document.getElementById('detail-close-btn').addEventListener('click', closeDetail);
+  document.getElementById('detail-analyze-btn').addEventListener('click', ()=>analizarDetalle(a));
+  document.getElementById('detail-guardar-nota').addEventListener('click', ()=>{
+    const txt = document.getElementById('detail-notas').value.trim();
+    setNotaExtra(a, txt);
+    alert('✅ Nota guardada.');
+  });
+  overlay.classList.add('on');
+}
+
+// Notas extra: se guardan aparte (indexadas por fecha+tipo) para poder anotar
+// CUALQUIER actividad, incluidas las 105 que vienen incrustadas de solo lectura en ACTS_BASE.
+function notaKey(a){ return a.fecha+'|'+a.tipo; }
+function getNotasExtra(){
+  try{ return JSON.parse(localStorage.getItem('trainai_notas')||'{}'); }catch(e){ return {}; }
+}
+function getNotaExtra(a){
+  const notas = getNotasExtra();
+  const guardada = notas[notaKey(a)];
+  if(guardada != null) return guardada; // la nota editada por el usuario tiene prioridad una vez existe
+  return a.notas || ''; // si nunca se ha editado, se muestra la nota original (técnica o manual) como punto de partida
+}
+function setNotaExtra(a, texto){
+  const notas = getNotasExtra();
+  if(texto){ notas[notaKey(a)] = texto; } else { delete notas[notaKey(a)]; }
+  localStorage.setItem('trainai_notas', JSON.stringify(notas));
+}
+
+function closeDetail(){
+  document.getElementById('detail-overlay').classList.remove('on');
+}
+
+function analizarDetalle(a){
+  const p=`Analiza en detalle esta actividad de Juanjo:\nDeporte: ${a.tipo} | Fecha: ${a.fecha} | Nombre: ${a.nombre}\nDistancia: ${a.tipo==='Natación'?a.distancia+'m':a.distancia+'km'} | Duración: ${a.duracion_min}min\n${a.ritmo_min_km?'Ritmo: '+a.ritmo_min_km+' min/km\n':''}${a.vel_kmh?'Velocidad: '+a.vel_kmh+' km/h\n':''}FC media: ${a.fc_media||'—'} ppm | FC máx: ${a.fc_max||'—'} ppm\nCarga TL: ${a.training_load||'—'} | Calorías: ${a.calorias||'—'} | Desnivel: ${a.desnivel||0}m\n\nDame: evaluación del rendimiento, comparación con su historial real, cómo encaja en el plan de verano, y recomendación concreta para el próximo entrenamiento.`;
+  callIA(p,'spin-detail','resp-detail');
+}
+
+// ─────────────────────────────────────────────
+// TAB REGISTRAR
+// ─────────────────────────────────────────────
+function buildReg(){
+  const el=document.getElementById('tab-reg');
+  el.innerHTML=`
+  <div class="sh"><div><div class="st">Registrar actividad</div><div class="ss">Añade un entrenamiento manualmente o importando datos</div></div></div>
+
+  <div class="g2">
+    <!-- FORMULARIO MANUAL -->
+    <div class="card">
+      <div class="card-t">Datos del entrenamiento</div>
+      <div class="fg2 fr">
+        <div><label>Deporte</label>
+          <select id="r-dep">
+            <option value="Carrera">🏃 Carrera</option>
+            <option value="Natación">🏊 Natación</option>
+            <option value="Bicicleta">🚴 Bicicleta</option>
+          </select>
+        </div>
+        <div><label>Fecha</label><input type="date" id="r-fecha"></div>
+      </div>
+      <div class="fg3 fr">
+        <div><label id="r-dist-lbl">Distancia (km)</label><input type="number" id="r-dist" step="0.01" placeholder="6.0"></div>
+        <div><label>Duración (min)</label><input type="number" id="r-dur" placeholder="34"></div>
+        <div><label>Desnivel (m)</label><input type="number" id="r-des" placeholder="0"></div>
+      </div>
+      <div class="fg3 fr">
+        <div><label>FC media (ppm)</label><input type="number" id="r-fc" placeholder="164"></div>
+        <div><label>FC máx (ppm)</label><input type="number" id="r-fcmax" placeholder="184"></div>
+        <div><label>Calorías</label><input type="number" id="r-cal" placeholder="400"></div>
+      </div>
+      <div class="fg3 fr">
+        <div><label>Carga TL</label><input type="number" id="r-tl" placeholder="55"></div>
+        <div><label>Velocidad media (km/h)</label><input type="number" id="r-vel" step="0.1" placeholder="22.0"></div>
+        <div><label>RPE (1-10)</label><input type="number" id="r-rpe" min="1" max="10" placeholder="6"></div>
+      </div>
+      <div class="fr"><label>Notas / sensaciones</label>
+        <textarea id="r-notas" rows="3" placeholder="¿Cómo fue? Piernas, calor, respiración, ánimo, sensaciones generales..."></textarea>
+      </div>
+      <div style="display:flex;gap:.75rem;flex-wrap:wrap">
+        <button class="btn btn-p" id="btn-guardar">💾 Guardar actividad</button>
+        <button class="btn btn-s" id="btn-guardar-anal">💾🤖 Guardar y analizar</button>
+      </div>
+    </div>
+
+    <!-- IMPORTAR / PEGAR -->
+    <div>
+      <div class="card">
+        <div class="card-t">Importar desde Strava / Intervals / Garmin</div>
+        <div class="import-area" id="import-drop">
+          📂 Sube un .FIT (Strava) o .CSV (Intervals.icu) — se guarda automáticamente
+          <input type="file" id="r-file" accept=".gpx,.fit,.tcx,.json,.csv" style="display:none">
+        </div>
+        <div style="font-size:.72rem;color:var(--mu);margin-bottom:.9rem">Los .FIT (Strava, una actividad) y .CSV (Intervals.icu, una o varias actividades) se procesan al instante. GPX/TCX se analizan con IA (sin guardado automático).</div>
+        <div class="card" id="fit-preview" style="display:none;background:var(--bg);border-color:var(--cy);margin-bottom:.9rem"></div>
+        <div class="fr">
+          <label>O pega aquí datos en cualquier formato</label>
+          <textarea id="r-raw" rows="9" placeholder="Pega aquí cualquier cosa:
+• Resumen de sesión de Strava o Intervals.icu
+• CSV de actividades de Garmin Connect
+• Texto copiado de tu reloj Xiaomi / Garmin / Polar
+• Datos de intervals.icu (potencia, zonas, series...)
+• Descripción libre de lo que hiciste
+
+La IA extraerá toda la información y te dará feedback personalizado."></textarea>
+        </div>
+        <div style="display:flex;gap:.75rem;flex-wrap:wrap">
+          <button class="btn btn-p" id="btn-anal-raw">🤖 Analizar datos</button>
+          <button class="btn btn-s" id="btn-import-raw">📥 Importar como actividad</button>
+        </div>
+        <div class="spin-wrap" id="spin-reg"><div class="spin"></div>Analizando con IA...</div>
+        <div class="ai-box" id="resp-reg"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-t">💾 Backup y sincronización entre dispositivos</div>
+    <p style="font-size:.8rem;color:var(--mu);margin-bottom:.9rem">Tus actividades añadidas a mano, los planes y su historial de chat viven solo en este navegador. Exporta un archivo de respaldo y guárdalo (Drive, email, WhatsApp a ti mismo); luego impórtalo en otro dispositivo o navegador para tener los mismos datos.</p>
+    <div style="display:flex;gap:.6rem;flex-wrap:wrap;align-items:center">
+      <button class="btn btn-p btn-sm" id="btn-exportar-backup">⬇️ Exportar datos</button>
+      <button class="btn btn-s btn-sm" id="btn-importar-backup">⬆️ Importar datos</button>
+      <input type="file" id="backup-file" accept=".json" style="display:none">
+      <span id="backup-info" style="font-size:.74rem;color:var(--mu)"></span>
+    </div>
+  </div>`;
+
+  document.getElementById('btn-exportar-backup').addEventListener('click', exportarBackup);
+  document.getElementById('btn-importar-backup').addEventListener('click', ()=>document.getElementById('backup-file').click());
+  document.getElementById('backup-file').addEventListener('change', importarBackup);
+  actualizarInfoBackup();
+
+  // Listeners formulario
+  document.getElementById('r-dep').addEventListener('change',e=>{
+    document.getElementById('r-dist-lbl').textContent=e.target.value==='Natación'?'Distancia (m)':'Distancia (km)';
+  });
+  document.getElementById('r-fecha').value=new Date().toISOString().split('T')[0];
+  document.getElementById('btn-guardar').addEventListener('click',()=>guardarAct(false));
+  document.getElementById('btn-guardar-anal').addEventListener('click',()=>guardarAct(true));
+  document.getElementById('btn-anal-raw').addEventListener('click',analizarRaw);
+  document.getElementById('btn-import-raw').addEventListener('click',importarRaw);
+  document.getElementById('r-file').addEventListener('change',handleFile);
+  const drop=document.getElementById('import-drop');if(drop)drop.addEventListener('click',()=>document.getElementById('r-file').click());
+}
+
+function guardarAct(analizar){
+  const dep=document.getElementById('r-dep').value;
+  const fecha=document.getElementById('r-fecha').value;
+  const dist=parseFloat(document.getElementById('r-dist').value)||0;
+  const dur=parseFloat(document.getElementById('r-dur').value)||0;
+  const fc=parseInt(document.getElementById('r-fc').value)||null;
+  const fcmax=parseInt(document.getElementById('r-fcmax').value)||null;
+  const cal=parseInt(document.getElementById('r-cal').value)||null;
+  const des=parseFloat(document.getElementById('r-des').value)||0;
+  const tl=parseInt(document.getElementById('r-tl').value)||null;
+  const vel=parseFloat(document.getElementById('r-vel').value)||null;
+  const notas=document.getElementById('r-notas').value;
+  if(!fecha||!dur){alert('Completa al menos fecha y duración.');return;}
+  const act={fecha,tipo:dep,nombre:dep+' '+fecha,distancia:dist,duracion_min:dur,
+    fc_media:fc,fc_max:fcmax,calorias:cal,desnivel:des,training_load:tl,
+    fitness:null,fatiga:null,intensidad:null,fc_z1s:null,fc_z2s:null,fc_z3s:null,fc_z4s:null,fc_z5s:null,race:false};
+  if(dep==='Carrera'&&dist&&dur) act.ritmo_min_km=parseFloat((dur/dist).toFixed(2));
+  if(dep==='Bicicleta'&&dist&&dur) act.vel_kmh=vel||parseFloat((dist/(dur/60)).toFixed(1));
+  if(dep==='Bicicleta'&&vel) act.vel_kmh=vel;
+  if(notas) act.notas=notas;
+  const local=JSON.parse(localStorage.getItem('trainai')||'[]');
+  local.unshift(act);localStorage.setItem('trainai',JSON.stringify(local));
+  ACTS=[act,...ACTS_BASE,...JSON.parse(localStorage.getItem('trainai')||'[]').slice(1)];
+  alert('✅ '+dep+' del '+fecha+' guardada.');
+  // Refrescar Datos/Historial/Plan por si están visibles, para que reflejen la nueva actividad al instante
+  if(document.getElementById('tab-plan').classList.contains('on')) buildPlan();
+  if(analizar){
+    const p=`Juanjo acaba de registrar esta actividad. Analízala y da feedback detallado:\nDeporte: ${dep} | Fecha: ${fecha}\nDistancia: ${dist}${dep==='Natación'?'m':'km'} | Duración: ${dur}min\nFC media: ${fc||'—'} | FC máx: ${fcmax||'—'} | Desnivel: ${des}m | Calorías: ${cal||'—'}\n${notas?'Sensaciones: '+notas:''}`;
+    callIA(p,'spin-reg','resp-reg');
+  }
+}
+
+async function analizarRaw(){
+  const raw=document.getElementById('r-raw').value.trim();
+  if(!raw){alert('Pega datos primero.');return;}
+  const p=`Analiza estos datos de entrenamiento de Juanjo y extrae toda la información relevante. Luego da feedback personalizado según su historial y objetivo Don Benito sub-28:\n\n${raw}`;
+  callIA(p,'spin-reg','resp-reg');
+}
+
+function importarRaw(){
+  const raw=document.getElementById('r-raw').value.trim();
+  if(!raw){alert('Pega datos primero.');return;}
+  // Pre-rellenar notas con los datos pegados
+  document.getElementById('r-notas').value=raw.slice(0,500);
+  alert('Datos importados en el campo de notas. Completa el resto del formulario y guarda.');
+}
+
+function handleFile(e){
+  const file=e.target.files[0]; if(!file) return;
+  const esFit = /\.fit$/i.test(file.name);
+  const esCsv = /\.csv$/i.test(file.name);
+
+  if(esFit){
+    const reader = new FileReader();
+    reader.onload = ev => {
+      try{
+        const tipoSel = document.getElementById('r-dep').value;
+        const act = fitToActivity(ev.target.result, tipoSel);
+        mostrarPreviewFit(act, file.name);
+      }catch(err){
+        alert('No se pudo leer este archivo FIT: '+err.message+'\n\nPuedes pegar los datos manualmente en el campo de texto, o subir el archivo aquí para analizarlo con la IA.');
+      }
+    };
+    reader.readAsArrayBuffer(file);
+  } else if(esCsv){
+    const reader = new FileReader();
+    reader.onload = ev => {
+      try{
+        const acts = intervalsCSVToActivities(ev.target.result);
+        mostrarPreviewCSV(acts, file.name);
+      }catch(err){
+        alert('No se pudo leer este CSV: '+err.message+'\n\nAsegúrate de que es una exportación de actividades de Intervals.icu (Settings → algo similar a Export → Activities CSV).');
+      }
+    };
+    reader.readAsText(file);
+  } else {
+    // GPX / TCX / otros: seguimos con el flujo de texto + IA, no garantizamos parseo automático
+    const reader = new FileReader();
+    reader.onload = ev => {
+      document.getElementById('r-raw').value = ev.target.result.slice(0,3000);
+      alert('Archivo cargado como texto. Para GPX/TCX usa el botón "Analizar datos" — el guardado automático directo solo está disponible para archivos .FIT y .CSV de Intervals.icu.');
+    };
+    reader.readAsText(file);
+  }
+}
+
+function mostrarPreviewFit(act, filename){
+  const cont = document.getElementById('fit-preview');
+  if(!cont) return;
+  const emoji = {Carrera:'🏃',Natación:'🏊',Bicicleta:'🚴'}[act.tipo] || '⚡';
+  cont.style.display = 'block';
+  cont.innerHTML = `
+    <div class="card-t" style="color:var(--cy)">${emoji} Vista previa — ${esc(filename)}</div>
+    <div class="g3" style="gap:.6rem;margin-bottom:.9rem">
+      ${stat(act.fecha,'Fecha')}
+      ${stat(act.tipo==='Natación'?(act.distancia+'m'):(act.distancia+'km'),'Distancia')}
+      ${stat(act.duracion_min+'min','Duración')}
+      ${stat(act.fc_media!=null?act.fc_media+'ppm':'—','FC media')}
+      ${stat(act.fc_max!=null?act.fc_max+'ppm':'—','FC máxima')}
+      ${stat(act.calorias!=null?act.calorias:'—','Calorías')}
+      ${stat(act.training_load!=null?act.training_load:'—','Carga (TL)')}
+    </div>
+    ${act.ritmo_min_km ? `<div style="font-size:.82rem;color:var(--mu);margin-bottom:.6rem">Ritmo medio: <strong style="color:var(--tx)">${fmtMinKm(act.ritmo_min_km)}/km</strong></div>` : ''}
+    ${act.vel_kmh ? `<div style="font-size:.82rem;color:var(--mu);margin-bottom:.6rem">Velocidad media: <strong style="color:var(--tx)">${act.vel_kmh} km/h</strong></div>` : ''}
+    ${act.splits_km ? `<div style="font-size:.78rem;color:var(--mu);margin-bottom:.6rem">Splits por km detectados: <strong style="color:var(--tx)">${act.splits_km.length}</strong> (se guardarán con la actividad)</div>` : ''}
+    ${act.zonas_estimadas ? `<div style="font-size:.74rem;color:var(--mu);margin-bottom:.9rem">Zonas de FC estimadas (LTHR 172) calculadas a partir del archivo — pueden diferir algo de las que veas en Intervals.icu, que usa su propio umbral.</div>` : ''}
+    <div style="display:flex;gap:.6rem;flex-wrap:wrap">
+      <button class="btn btn-p btn-sm" id="btn-confirmar-fit">💾 Guardar en el historial</button>
+      <button class="btn btn-s btn-sm" id="btn-descartar-fit">✕ Descartar</button>
+    </div>
+  `;
+  window._fitPendiente = act;
+  document.getElementById('btn-confirmar-fit').addEventListener('click', ()=>{
+    guardarActividadDirecta(window._fitPendiente);
+    cont.style.display = 'none';
+    cont.innerHTML = '';
+    document.getElementById('r-file').value = '';
+  });
+  document.getElementById('btn-descartar-fit').addEventListener('click', ()=>{
+    cont.style.display = 'none';
+    cont.innerHTML = '';
+    window._fitPendiente = null;
+    document.getElementById('r-file').value = '';
+  });
+}
+
+function guardarActividadDirecta(act){
+  const local = JSON.parse(localStorage.getItem('trainai')||'[]');
+  const yaExiste = ACTS.some(a => a.fecha===act.fecha && a.tipo===act.tipo && Math.abs((a.distancia||0)-(act.distancia||0))<0.05);
+  if(yaExiste){
+    if(!confirm('Ya existe una actividad de '+act.tipo+' el '+act.fecha+' con distancia similar. ¿Guardarla de todas formas?')) return;
+  }
+  local.unshift(act);
+  localStorage.setItem('trainai', JSON.stringify(local));
+  ACTS = [act, ...ACTS_BASE, ...JSON.parse(localStorage.getItem('trainai')||'[]').slice(1)];
+  alert('✅ '+act.tipo+' del '+act.fecha+' guardada directamente desde el archivo.');
+  if(document.getElementById('tab-plan').classList.contains('on')) buildPlan();
+  if(document.getElementById('tab-hist').classList.contains('on')) renderHist();
+}
+
+// ── Vista previa e importación en lote para CSV de Intervals.icu ──
+function mostrarPreviewCSV(acts, filename){
+  const cont = document.getElementById('fit-preview');
+  if(!cont) return;
+  if(!acts.length){ alert('No se encontraron actividades válidas en este CSV.'); return; }
+
+  const nuevas = acts.filter(a => !ACTS.some(b => b.fecha===a.fecha && b.tipo===a.tipo && Math.abs((b.distancia||0)-(a.distancia||0))<0.05));
+  const duplicadas = acts.length - nuevas.length;
+  const emoji = {Carrera:'🏃',Natación:'🏊',Bicicleta:'🚴',Caminata:'🚶',Senderismo:'🥾'};
+
+  cont.style.display = 'block';
+  cont.innerHTML = `
+    <div class="card-t" style="color:var(--cy)">📋 Vista previa — ${esc(filename)}</div>
+    <div class="g3" style="gap:.6rem;margin-bottom:.9rem">
+      ${stat(acts.length,'Actividades en el archivo')}
+      ${stat(nuevas.length,'Nuevas (no duplicadas)','v-c')}
+      ${stat(duplicadas,'Ya existentes','v-y')}
+    </div>
+    <div style="max-height:260px;overflow-y:auto;border:1px solid var(--bd);border-radius:8px;margin-bottom:.9rem">
+      <table class="tbl">
+        <thead><tr><th></th><th>Fecha</th><th>Tipo</th><th>Distancia</th><th>Duración</th><th>Estado</th></tr></thead>
+        <tbody>
+          ${acts.slice(0,30).map(a=>{
+            const dup = !nuevas.includes(a);
+            return `<tr style="${dup?'opacity:.45':''}">
+              <td>${emoji[a.tipo]||'⚡'}</td>
+              <td style="font-size:.74rem;color:var(--mu)">${a.fecha}</td>
+              <td style="font-size:.78rem">${a.tipo}</td>
+              <td style="font-size:.78rem">${a.tipo==='Natación'?(a.distancia||'—')+'m':(a.distancia||'—')+'km'}</td>
+              <td style="font-size:.78rem">${a.duracion_min||'—'}min</td>
+              <td style="font-size:.7rem">${dup?'<span style=\"color:var(--ye)\">ya existe</span>':'<span style=\"color:var(--cy)\">nueva</span>'}</td>
+            </tr>`;
+          }).join('')}
+          ${acts.length>30?`<tr><td colspan="6" style="text-align:center;color:var(--mu);font-size:.75rem;padding:.6rem">… y ${acts.length-30} más</td></tr>`:''}
+        </tbody>
+      </table>
+    </div>
+    <div style="display:flex;gap:.6rem;flex-wrap:wrap">
+      <button class="btn btn-p btn-sm" id="btn-importar-csv">💾 Importar ${nuevas.length} actividad${nuevas.length===1?'':'es'} nueva${nuevas.length===1?'':'s'}</button>
+      ${duplicadas>0?`<button class="btn btn-s btn-sm" id="btn-importar-csv-todas">💾 Importar todas igualmente (${acts.length})</button>`:''}
+      <button class="btn btn-s btn-sm" id="btn-descartar-csv">✕ Descartar</button>
+    </div>
+  `;
+  window._csvPendiente = { acts, nuevas };
+
+  document.getElementById('btn-importar-csv').addEventListener('click', ()=>{
+    importarActividadesLote(window._csvPendiente.nuevas);
+    cont.style.display='none'; cont.innerHTML=''; document.getElementById('r-file').value='';
+  });
+  const btnTodas = document.getElementById('btn-importar-csv-todas');
+  if(btnTodas) btnTodas.addEventListener('click', ()=>{
+    importarActividadesLote(window._csvPendiente.acts);
+    cont.style.display='none'; cont.innerHTML=''; document.getElementById('r-file').value='';
+  });
+  document.getElementById('btn-descartar-csv').addEventListener('click', ()=>{
+    cont.style.display='none'; cont.innerHTML=''; window._csvPendiente=null; document.getElementById('r-file').value='';
+  });
+}
+
+function importarActividadesLote(nuevasActs){
+  if(!nuevasActs.length){ alert('No hay actividades nuevas que importar.'); return; }
+  const local = JSON.parse(localStorage.getItem('trainai')||'[]');
+  local.unshift(...nuevasActs);
+  localStorage.setItem('trainai', JSON.stringify(local));
+  ACTS = [...nuevasActs, ...ACTS_BASE, ...JSON.parse(localStorage.getItem('trainai')||'[]').slice(nuevasActs.length)];
+  alert('✅ '+nuevasActs.length+' actividad(es) importada(s) desde el CSV de Intervals.icu.');
+  if(document.getElementById('tab-plan').classList.contains('on')) buildPlan();
+  if(document.getElementById('tab-hist').classList.contains('on')) renderHist();
+  if(document.getElementById('tab-datos').classList.contains('on')) buildDatos();
+}
+
+
+// ─────────────────────────────────────────────
+// BACKUP / EXPORTAR / IMPORTAR (sincronización manual entre dispositivos)
+// ─────────────────────────────────────────────
+const BACKUP_KEYS = ['trainai', 'trainai_planes', 'trainai_plan_activo', 'trainai_notas', 'trainai_apikey'];
+
+function exportarBackup(){
+  const datos = {
+    version: 1,
+    exportado_en: new Date().toISOString(),
+    app: 'Extrena',
+  };
+  BACKUP_KEYS.forEach(k => { datos[k] = localStorage.getItem(k); });
+
+  const blob = new Blob([JSON.stringify(datos, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  const fecha = new Date().toISOString().slice(0,10);
+  a.download = `entrenador-backup-${fecha}.json`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+function importarBackup(e){
+  const file = e.target.files[0]; if(!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    try {
+      const datos = JSON.parse(ev.target.result);
+      if(datos.version !== 1 || !BACKUP_KEYS.some(k => datos[k] != null)){
+        alert('Este archivo no parece un backup válido de esta app.');
+        return;
+      }
+      const nActividades = datos.trainai ? JSON.parse(datos.trainai).length : 0;
+      const nPlanes = datos.trainai_planes ? JSON.parse(datos.trainai_planes).length : 0;
+      if(!confirm(`Este backup contiene ${nActividades} actividad(es) añadidas a mano y ${nPlanes} plan(es), del ${datos.exportado_en ? datos.exportado_en.slice(0,10) : 'fecha desconocida'}.\n\n¿Importar? Esto SOBRESCRIBIRÁ los datos actuales de este navegador.`)) return;
+
+      BACKUP_KEYS.forEach(k => {
+        if(datos[k] != null) localStorage.setItem(k, datos[k]);
+      });
+      alert('✅ Backup importado. La página se recargará para aplicar los cambios.');
+      location.reload();
+    } catch(err) {
+      alert('No se pudo leer este archivo: ' + err.message);
+    }
+  };
+  reader.readAsText(file);
+}
+
+function actualizarInfoBackup(){
+  const el = document.getElementById('backup-info');
+  if(!el) return;
+  const local = JSON.parse(localStorage.getItem('trainai')||'[]');
+  const planes = JSON.parse(localStorage.getItem('trainai_planes')||'[]');
+  el.textContent = `${local.length} actividad(es) y ${planes.length} plan(es) en este navegador.`;
+}
+
+// ─────────────────────────────────────────────
+// API KEY — gestión y UI de configuración
+// ─────────────────────────────────────────────
+function getApiKey(){ return localStorage.getItem('trainai_apikey') || ''; }
+function setApiKey(k){ localStorage.setItem('trainai_apikey', k.trim()); }
+
+function mostrarModalObjetivo(){
+  const obj = getObjetivo();
+  const modal = document.createElement('div');
+  modal.id = 'modal-objetivo';
+  modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:9999;display:flex;align-items:center;justify-content:center;padding:1rem';
+  modal.innerHTML = `
+    <div style="background:var(--s1);border:1px solid var(--bd);border-radius:14px;padding:1.5rem;max-width:380px;width:100%">
+      <div style="font-family:'Space Grotesk',sans-serif;font-size:1.05rem;font-weight:700;color:var(--cy);margin-bottom:.9rem">🎯 Objetivo principal</div>
+      <div style="font-size:.78rem;color:var(--mu);margin-bottom:.3rem">Nombre de la carrera</div>
+      <input id="obj-nombre" type="text" value="${obj.nombre}" placeholder="Don Benito, Nocturna Zurbarán..."
+        style="width:100%;box-sizing:border-box;background:var(--s2);border:1px solid var(--bd);color:var(--tx);border-radius:8px;padding:.6rem .8rem;font-size:.85rem;margin-bottom:.75rem">
+      <div style="font-size:.78rem;color:var(--mu);margin-bottom:.3rem">Fecha de la carrera</div>
+      <input id="obj-fecha" type="date" value="${obj.fecha}"
+        style="width:100%;box-sizing:border-box;background:var(--s2);border:1px solid var(--bd);color:var(--tx);border-radius:8px;padding:.6rem .8rem;font-size:.85rem;margin-bottom:.9rem">
+      <div style="display:flex;gap:.6rem">
+        <button id="btn-guardar-obj" class="btn btn-p btn-sm" style="flex:1">💾 Guardar</button>
+        <button id="btn-cerrar-obj" class="btn btn-s btn-sm">Cancelar</button>
+      </div>
+    </div>`;
+  document.body.appendChild(modal);
+  document.getElementById('btn-guardar-obj').addEventListener('click', ()=>{
+    const nombre = document.getElementById('obj-nombre').value.trim();
+    const fecha = document.getElementById('obj-fecha').value;
+    if(!nombre || !fecha){ alert('Introduce nombre y fecha.'); return; }
+    setObjetivo(nombre, fecha);
+    modal.remove();
+    // Actualizar el header inmediatamente
+    const d = diasObj();
+    const diasEl = document.getElementById('dias-hdr');
+    diasEl.textContent = d>0 ? d+' días para '+nombreObj() : '¡'+nombreObj()+' hoy!';
+    // Recargar Datos si está visible
+    if(document.getElementById('tab-datos').classList.contains('on')) buildDatos();
+  });
+  document.getElementById('btn-cerrar-obj').addEventListener('click', ()=>modal.remove());
+}
+
+function mostrarModalApiKey(mensajeExtra){
+  const existing = document.getElementById('modal-apikey');
+  if(existing) existing.remove();
+
+  const modal = document.createElement('div');
+  modal.id = 'modal-apikey';
+  modal.style.cssText = `position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:9999;display:flex;align-items:center;justify-content:center;padding:1rem`;
+  modal.innerHTML = `
+    <div style="background:var(--s1);border:1px solid var(--bd);border-radius:14px;padding:1.5rem;max-width:420px;width:100%">
+      <div style="font-family:'Space Grotesk',sans-serif;font-size:1.05rem;font-weight:700;color:var(--cy);margin-bottom:.5rem">🔑 API Key de Anthropic</div>
+      ${mensajeExtra ? `<div style="font-size:.8rem;color:#c4622f;margin-bottom:.75rem">${mensajeExtra}</div>` : ''}
+      <div style="font-size:.8rem;color:var(--mu);margin-bottom:.9rem">Introduce tu API key de <a href="https://console.anthropic.com" target="_blank" style="color:var(--cy)">console.anthropic.com</a>. Se guarda solo en este dispositivo.</div>
+      <input id="input-apikey" type="password" placeholder="sk-ant-..." value="${getApiKey()}"
+        style="width:100%;box-sizing:border-box;background:var(--s2);border:1px solid var(--bd);color:var(--tx);border-radius:8px;padding:.6rem .8rem;font-size:.85rem;margin-bottom:.9rem">
+      <div style="display:flex;gap:.6rem">
+        <button id="btn-guardar-apikey" class="btn btn-p btn-sm" style="flex:1">💾 Guardar</button>
+        ${getApiKey() ? `<button id="btn-cerrar-apikey" class="btn btn-s btn-sm">Cancelar</button>` : ''}
+      </div>
+    </div>`;
+  document.body.appendChild(modal);
+
+  document.getElementById('btn-guardar-apikey').addEventListener('click', ()=>{
+    const k = document.getElementById('input-apikey').value.trim();
+    if(!k.startsWith('sk-ant-')){ alert('La API key debe empezar por sk-ant-'); return; }
+    setApiKey(k);
+    modal.remove();
+  });
+  const btnCerrar = document.getElementById('btn-cerrar-apikey');
+  if(btnCerrar) btnCerrar.addEventListener('click', ()=>modal.remove());
+}
+
+// Añade el botón de configuración de API key en el header
+function addApiKeyBtn(){
+  // Añadir el botón de API key dentro del div de la derecha (último div del header)
+  const header = document.querySelector('header');
+  if(!header) return;
+  const rightDiv = header.querySelector('div:last-child');
+  const btn = document.createElement('button');
+  btn.className = 'btn btn-s btn-sm';
+  btn.style.fontSize = '.72rem';
+  btn.textContent = '🔑';
+  btn.title = 'Configurar API Key';
+  btn.addEventListener('click', ()=>mostrarModalApiKey());
+  if(rightDiv) rightDiv.appendChild(btn);
+  else header.appendChild(btn);
+}
+
+// ─────────────────────────────────────────────
+// INIT
+// ─────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded',()=>{
+  // Días en header
+  const d=diasObj();
+  const diasEl = document.getElementById('dias-hdr');
+  const obj = getObjetivo();
+  diasEl.textContent = d>0 ? d+' días para '+obj.nombre : '¡'+obj.nombre+' hoy!';
+  diasEl.title = 'Pulsa para cambiar el objetivo';
+  diasEl.style.cursor = 'pointer';
+  diasEl.onclick = ()=>mostrarModalObjetivo();
+
+  buildNav();
+  addApiKeyBtn();
+  buildChat();
+  buildDatos();
+  buildLogros();
+  buildPlan();
+  buildHist();
+  buildReg();
+
+  // Si no hay API key configurada, mostrar el modal al arrancar
+  if(!getApiKey()) mostrarModalApiKey('Para usar el chat con la IA necesitas introducir tu API key de Anthropic.');
+
+  showTab('chat');
+});
+</script>
+</body>
+</html>
