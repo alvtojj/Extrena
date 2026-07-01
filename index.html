@@ -2392,7 +2392,14 @@ function openDetail(i){
   if(btnBorrar) btnBorrar.addEventListener('click', ()=>{
     if(!confirm('¿Borrar esta actividad? No se puede deshacer.')) return;
     const local = JSON.parse(localStorage.getItem('trainai')||'[]');
-    const nuevaLista = local.filter(b=>!(b.fecha===a.fecha&&b.tipo===a.tipo&&Math.abs((b.distancia||0)-(a.distancia||0))<0.05));
+    // Borrar solo la primera coincidencia exacta (no todas las duplicadas)
+    let borrado = false;
+    const nuevaLista = local.filter(b=>{
+      if(!borrado && b.fecha===a.fecha && b.tipo===a.tipo && Math.abs((b.distancia||0)-(a.distancia||0))<0.05 && (b.duracion_min===a.duracion_min)){
+        borrado = true; return false;
+      }
+      return true;
+    });
     localStorage.setItem('trainai', JSON.stringify(nuevaLista));
     ACTS = [...ACTS_BASE, ...nuevaLista];
     closeDetail();
@@ -2598,6 +2605,15 @@ function handleFile(e){
       try{
         const tipoSel = document.getElementById('r-dep').value;
         const act = fitToActivity(ev.target.result, tipoSel);
+        // Avisar si el tipo seleccionado no parece coincidir con el archivo
+        if(tipoSel !== 'Natación' && file.name.toLowerCase().includes('swim')) {
+          if(confirm('El archivo parece ser de natación pero tienes seleccionado "'+tipoSel+'". ¿Cambiar a Natación?')){
+            document.getElementById('r-dep').value = 'Natación';
+            const actNat = fitToActivity(ev.target.result, 'Natación');
+            mostrarPreviewFit(actNat, file.name);
+            return;
+          }
+        }
         mostrarPreviewFit(act, file.name);
       }catch(err){
         alert('No se pudo leer este archivo FIT: '+err.message+'\n\nPuedes pegar los datos manualmente en el campo de texto, o subir el archivo aquí para analizarlo con la IA.');
