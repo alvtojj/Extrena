@@ -835,7 +835,23 @@ function progBar(label,val,pct,color){
 function buildCtx(){
   const s=calcStats(), d=diasObj();
   const planTexto = getPlanTexto();
+  const ahora = new Date();
+  const diasSemana = ['domingo','lunes','martes','miércoles','jueves','viernes','sábado'];
+  const meses = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+  const diaSemanaHoy = diasSemana[ahora.getDay()];
+  const diaNumerico = ahora.getDate();
+  const mesNombre = meses[ahora.getMonth()];
+  const anio = ahora.getFullYear();
+  const fechaISO = ahora.toISOString().slice(0,10);
   return `Eres el entrenador personal de Juanjo, multideportista popular de Villanueva de la Serena (Extremadura). Hablas en español, eres cercano, directo y muy específico con datos reales. Nunca genérico.
+
+⚠️ FECHA ACTUAL (MUY IMPORTANTE — úsala siempre):
+- Fecha ISO: ${fechaISO}
+- Día de la semana: ${diaSemanaHoy}
+- Día del mes: ${diaNumerico}
+- Mes: ${mesNombre} de ${anio}
+- Días hasta Don Benito: ${d}
+NUNCA uses otra fecha. NUNCA asumas que es otro día. Si calculas fechas futuras, parte siempre del ${fechaISO} como hoy.
 
 OBJETIVO: XXXVI Fondo Popular Don Benito · 5 km · 29 agosto 2026 (en ${d} días)
 Marca actual: 30:51 (Cross Trujillo, 21 jun 2026) · Meta: sub-28:00 · Ritmo necesario: 5:36/km · Mejora: 2:51 (~17s/km)
@@ -881,7 +897,13 @@ async function callIA(prompt, loadId, respId){
 // ─────────────────────────────────────────────
 // TAB CHAT
 // ─────────────────────────────────────────────
-let chatHistory=[];
+let chatHistory = JSON.parse(localStorage.getItem('trainai_chat') || '[]');
+
+function guardarChatHistory(){
+  // Guardar solo los últimos 20 mensajes para no crecer indefinidamente
+  const ultimos = chatHistory.slice(-20);
+  localStorage.setItem('trainai_chat', JSON.stringify(ultimos));
+}
 // Calcula el TSB (Fitness-Fatiga) de las últimas N sesiones con datos, y detecta racha de fatiga sostenida
 function calcAlertaSobreentrenamiento(){
   const conForma = ACTS.filter(a => a.fitness!=null && a.fatiga!=null)
@@ -997,7 +1019,20 @@ function buildChat(){
   if(btnResumenIa) btnResumenIa.addEventListener('click', ()=>{
     pq(6);
   });
-  limpiarChat();
+  // Si hay historial guardado, restaurarlo; si no, mostrar bienvenida
+  const box = document.getElementById('chat-msgs');
+  if(chatHistory.length > 0 && box){
+    box.innerHTML = '';
+    chatHistory.forEach(m => {
+      const div = document.createElement('div');
+      div.className = 'msg msg-' + m.role;
+      div.textContent = m.content[0]?.text || m.content;
+      box.appendChild(div);
+    });
+    box.scrollTop = box.scrollHeight;
+  } else {
+    limpiarChat();
+  }
 }
 const QUICK=[
   '¿Cómo voy de cara al objetivo sub-28 en Don Benito el 29 de agosto? Dame un análisis honesto con mis datos reales.',
@@ -1011,6 +1046,7 @@ const QUICK=[
 ];
 function pq(i){document.getElementById('chat-in').value=QUICK[i];enviarChat();}
 function addMsg(role,text){
+  guardarChatHistory();
   const box=document.getElementById('chat-msgs');
   const d=document.createElement('div');
   d.className='msg '+(role==='user'?'msg-u':'msg-a');
@@ -1020,6 +1056,7 @@ function addMsg(role,text){
 }
 function limpiarChat(){
   chatHistory=[];
+  localStorage.removeItem('trainai_chat');
   const box=document.getElementById('chat-msgs');
   if(box){box.innerHTML='';
     addMsg('ai',`¡Hola Juanjo! 👋 Tengo cargado tu historial completo (${ACTS.length} actividades desde octubre) y tu plan de verano.\n\nEstamos a ${diasObj()} días de Don Benito. ¿En qué te ayudo?`);}
@@ -2455,7 +2492,12 @@ function closeDetail(){
 }
 
 function analizarDetalle(a){
-  const p=`Analiza en detalle esta actividad de Juanjo:\nDeporte: ${a.tipo} | Fecha: ${a.fecha} | Nombre: ${a.nombre}\nDistancia: ${a.tipo==='Natación'?a.distancia+'m':a.distancia+'km'} | Duración: ${a.duracion_min}min\n${a.ritmo_min_km?'Ritmo: '+a.ritmo_min_km+' min/km\n':''}${a.vel_kmh?'Velocidad: '+a.vel_kmh+' km/h\n':''}FC media: ${a.fc_media||'—'} ppm | FC máx: ${a.fc_max||'—'} ppm\nCarga TL: ${a.training_load||'—'} | Calorías: ${a.calorias||'—'} | Desnivel: ${a.desnivel||0}m\n\nDame: evaluación del rendimiento, comparación con su historial real, cómo encaja en el plan de verano, y recomendación concreta para el próximo entrenamiento.`;
+  const hoyISO = new Date().toISOString().slice(0,10);
+  const diasSemana = ['domingo','lunes','martes','miércoles','jueves','viernes','sábado'];
+  const diaSemHoy = diasSemana[new Date().getDay()];
+  const p=`FECHA DE HOY: ${hoyISO} (${diaSemHoy}). Usa esta fecha para cualquier referencia a entrenamientos futuros o pasados.
+
+Analiza en detalle esta actividad de Juanjo:\nDeporte: ${a.tipo} | Fecha: ${a.fecha} | Nombre: ${a.nombre}\nDistancia: ${a.tipo==='Natación'?a.distancia+'m':a.distancia+'km'} | Duración: ${a.duracion_min}min\n${a.ritmo_min_km?'Ritmo: '+a.ritmo_min_km+' min/km\n':''}${a.vel_kmh?'Velocidad: '+a.vel_kmh+' km/h\n':''}FC media: ${a.fc_media||'—'} ppm | FC máx: ${a.fc_max||'—'} ppm\nCarga TL: ${a.training_load||'—'} | Calorías: ${a.calorias||'—'} | Desnivel: ${a.desnivel||0}m\n\nDame: evaluación del rendimiento, comparación con su historial real, cómo encaja en el plan de verano, y recomendación concreta para el próximo entrenamiento. Al mencionar próximos entrenamientos, usa fechas concretas partiendo de hoy (${hoyISO}).`;
   callIA(p,'spin-detail','resp-detail');
 }
 
@@ -2789,7 +2831,7 @@ function importarActividadesLote(nuevasActs){
 // ─────────────────────────────────────────────
 // BACKUP / EXPORTAR / IMPORTAR (sincronización manual entre dispositivos)
 // ─────────────────────────────────────────────
-const BACKUP_KEYS = ['trainai', 'trainai_planes', 'trainai_plan_activo', 'trainai_notas', 'trainai_apikey'];
+const BACKUP_KEYS = ['trainai', 'trainai_planes', 'trainai_plan_activo', 'trainai_notas', 'trainai_apikey', 'trainai_chat'];
 
 function exportarBackup(){
   const datos = {
