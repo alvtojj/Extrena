@@ -746,6 +746,8 @@ function calcLogrosPorDeporte(tipo){
 
 
 function fmtH(h){ if(h==null) return '—'; const hh=Math.floor(h), mm=Math.round((h-hh)*60); return mm>0 ? hh+'h'+mm+'m' : hh+'h'; }
+// Convierte minutos decimales (ej: 40.6) a formato MM:SS (ej: 40:36)
+function fmtDuracion(min){ if(min==null) return '—'; const m=Math.floor(min), s=Math.round((min-m)*60); return m+':'+(s<10?'0':'')+s; }
 function fmtMinKm(v){ if(v==null) return '—'; const m=Math.floor(v), s=Math.round((v-m)*60); return m+':'+String(s).padStart(2,'0'); }
 function fmtInt(n){ return n==null ? '—' : Math.round(n).toLocaleString('es-ES'); }
 
@@ -843,15 +845,31 @@ function buildCtx(){
   const mesNombre = meses[ahora.getMonth()];
   const anio = ahora.getFullYear();
   const fechaISO = ahora.toISOString().slice(0,10);
+  // Calcular semana actual del plan
+  const hoyDate = new Date(fechaISO);
+  const inicioSemanas = ['2026-06-22','2026-06-29','2026-07-06','2026-07-13','2026-07-20','2026-07-27','2026-08-03','2026-08-10','2026-08-17','2026-08-24'];
+  const nombresSemanas = ['Semana 1 (22-28 jun)','Semana 2 (29 jun-5 jul)','Semana 3 (6-12 jul)','Semana 4 (13-19 jul)','Semana 5 (20-26 jul)','Semana 6 (27 jul-2 ago)','Semana 7 (3-9 ago)','Semana 8 (10-16 ago)','Semana 9 (17-23 ago)','Semana 10 (24-29 ago)'];
+  let semanaActual = 'fuera del plan';
+  for(let i=inicioSemanas.length-1;i>=0;i--){
+    if(fechaISO >= inicioSemanas[i]){ semanaActual = nombresSemanas[i]; break; }
+  }
+
   return `Eres el entrenador personal de Juanjo, multideportista popular de Villanueva de la Serena (Extremadura). Hablas en español, eres cercano, directo y muy específico con datos reales. Nunca genérico.
 
-⚠️ FECHA ACTUAL (MUY IMPORTANTE — úsala siempre):
-- Fecha ISO: ${fechaISO}
+⚠️ FECHA ACTUAL (MUY IMPORTANTE — úsala siempre para TODOS los cálculos):
+- Fecha ISO exacta de HOY: ${fechaISO}
 - Día de la semana: ${diaSemanaHoy}
-- Día del mes: ${diaNumerico}
-- Mes: ${mesNombre} de ${anio}
-- Días hasta Don Benito: ${d}
-NUNCA uses otra fecha. NUNCA asumas que es otro día. Si calculas fechas futuras, parte siempre del ${fechaISO} como hoy.
+- Día del mes: ${diaNumerico} de ${mesNombre} de ${anio}
+- Semana actual del plan: ${semanaActual}
+- Días hasta Don Benito (29 ago 2026): ${d}
+
+REGLAS DE FECHA — síguelas siempre sin excepción:
+1. HOY es ${fechaISO} (${diaSemanaHoy} ${diaNumerico} de ${mesNombre})
+2. MAÑANA es el día ${diaNumerico+1} de ${mesNombre} (o el 1 del mes siguiente si corresponde)
+3. La semana que viene empieza el lunes siguiente a HOY
+4. La Nocturna Zurbarán es el viernes 17 de julio de 2026 (Semana 4 del plan)
+5. Don Benito es el 29 de agosto de 2026
+6. NUNCA uses fechas anteriores o futuras como "hoy" — confía SOLO en el ${fechaISO} de arriba
 
 OBJETIVO: XXXVI Fondo Popular Don Benito · 5 km · 29 agosto 2026 (en ${d} días)
 Marca actual: 30:51 (Cross Trujillo, 21 jun 2026) · Meta: sub-28:00 · Ritmo necesario: 5:36/km · Mejora: 2:51 (~17s/km)
@@ -2348,7 +2366,7 @@ function renderHist(){
       <td style="color:var(--mu);font-size:.76rem">${a.fecha}</td>
       <td style="font-size:.8rem;max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${a.race?'🏆 ':''}${a.nombre}</td>
       <td>${a.tipo==='Natación'?(a.distancia||'—')+'m':(a.distancia||'—')+'km'}</td>
-      <td>${a.duracion_min?a.duracion_min+'min':'—'}</td>
+      <td>${a.duracion_min?fmtDuracion(a.duracion_min):'—'}</td>
       <td style="font-size:.78rem">${a.ritmo_min_km?fmtMinKm(a.ritmo_min_km)+' min/km':a.vel_kmh?fmtInt(a.vel_kmh)+' km/h':'—'}</td>
       <td>${a.fc_media?a.fc_media+' ppm':'—'}</td>
       <td>${a.training_load||'—'}</td>`;
@@ -2370,7 +2388,7 @@ function openDetail(i){
   rows.push(['Fecha', a.fecha]);
   rows.push(['Tipo', a.tipo]);
   rows.push(['Distancia', a.tipo==='Natación' ? (a.distancia??'—')+' m' : (a.distancia??'—')+' km']);
-  rows.push(['Duración', a.duracion_min!=null ? a.duracion_min+' min' : '—']);
+  rows.push(['Duración', a.duracion_min!=null ? fmtDuracion(a.duracion_min) : '—']);
   if(a.ritmo_min_km!=null) rows.push(['Ritmo medio', fmtMinKm(a.ritmo_min_km)+' /km']);
   if(a.vel_kmh!=null) rows.push(['Velocidad media', fmtInt(a.vel_kmh)+' km/h']);
   rows.push(['FC media', a.fc_media!=null ? a.fc_media+' ppm' : 'sin datos']);
@@ -2712,7 +2730,7 @@ function mostrarPreviewFit(act, filename){
     <div class="g3" style="gap:.6rem;margin-bottom:.9rem">
       ${stat(act.fecha,'Fecha')}
       ${stat(act.tipo==='Natación'?(act.distancia+'m'):(act.distancia+'km'),'Distancia')}
-      ${stat(act.duracion_min+'min','Duración')}
+      ${stat(fmtDuracion(act.duracion_min),'Duración')}
       ${stat(act.fc_media!=null?act.fc_media+'ppm':'—','FC media')}
       ${stat(act.fc_max!=null?act.fc_max+'ppm':'—','FC máxima')}
       ${stat(act.calorias!=null?act.calorias:'—','Calorías')}
